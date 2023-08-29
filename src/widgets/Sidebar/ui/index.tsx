@@ -10,15 +10,13 @@ import {
   Tooltip,
 } from "@mantine/core";
 import {
-  IconDotsVertical,
+  IconTrash,
   IconLayersSubtract,
   IconEye,
   IconEyeOff,
   IconPlus,
-  IconCircle,
-  IconPencil,
-  IconLine,
 } from "@tabler/icons-react";
+import { History } from "../../../features/History/ui";
 
 const useStyles = createStyles((theme) => ({
   navbar: {
@@ -97,12 +95,6 @@ const layers = [
   { icon: IconLayersSubtract, label: "Слой 3", isVisible: false },
 ];
 
-const actions = [
-  { icon: IconCircle, label: "Действие 3" },
-  { icon: IconPencil, label: "Действие 2" },
-  { icon: IconLine, label: "Действие 1" },
-];
-
 export function Sidebar() {
   const { classes } = useStyles();
 
@@ -119,20 +111,7 @@ export function Sidebar() {
           <IconEyeOff size={20} className={classes.mainLinkIcon} stroke={1.5} />
         )}
 
-        <IconDotsVertical
-          size={20}
-          className={classes.mainLinkIcon}
-          stroke={1.5}
-        />
-      </div>
-    </UnstyledButton>
-  ));
-
-  const mainActions = actions.map((action) => (
-    <UnstyledButton key={action.label} className={classes.mainLink}>
-      <div className={classes.mainLinkInner}>
-        <action.icon size={20} className={classes.mainLinkIcon} stroke={1.5} />
-        <span>{action.label}</span>
+        <IconTrash size={20} className={classes.mainLinkIcon} stroke={1.5} />
       </div>
     </UnstyledButton>
   ));
@@ -161,12 +140,7 @@ export function Sidebar() {
       </Navbar.Section>
 
       <Navbar.Section className={classes.section}>
-        <Group className={classes.sectionHeader} position="apart">
-          <Text size="xs" weight={500} color="dimmed">
-            История
-          </Text>
-        </Group>
-        <div className={classes.mainLinks}>{mainActions}</div>
+        <History />
       </Navbar.Section>
     </Navbar>
   );
