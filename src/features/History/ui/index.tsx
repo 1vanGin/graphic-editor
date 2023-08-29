@@ -80,7 +80,7 @@ export function History() {
 
   const mainActions = actions.map((action) => (
     <UnstyledButton
-      key={action.label}
+      key={action.id}
       className={cx(classes.action, {
         [classes.actionActive]: action.id === active,
       })}
