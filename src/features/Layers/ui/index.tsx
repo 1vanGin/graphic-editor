@@ -16,8 +16,15 @@ import {
   IconEyeOff,
   IconPlus,
 } from "@tabler/icons-react";
-import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { SliderHover } from "shared/SliderHover/ui";
+import {
+  addLayer,
+  deleteLayer,
+  setActiveLayer,
+  toggleVisability,
+} from "../model/slice";
+import { ILayer } from "./types";
 
 const useStyles = createStyles((theme) => ({
   layer: {
@@ -43,43 +50,25 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const defaultLayers = [
-  { id: 1, icon: IconLayersSubtract, label: "Слой 1", isVisible: true },
-  { id: 2, icon: IconLayersSubtract, label: "Слой 2", isVisible: true },
-  { id: 3, icon: IconLayersSubtract, label: "Слой 3", isVisible: false },
-];
-
 export function Layers() {
   const { classes, cx } = useStyles();
-  const [layers, setLayers] = useState(defaultLayers);
-  const [active, setActive] = useState(1);
-
-  const deleteHandler = (id: number) => {
-    const filteredLayers = layers.filter((item) => item.id !== id);
-    setLayers(filteredLayers);
-  };
-
-  const visabilityHandler = (id: number) => {
-    const newLayers = layers.map((item) => {
-      if (item.id === id) {
-        item.isVisible = !item.isVisible;
-      }
-      return item;
-    });
-    setLayers(newLayers);
-  };
+  const dispatch = useAppDispatch();
+  const layers = useAppSelector((state) => state.layers.layers);
+  const active = useAppSelector((state) => state.layers.activeLayer);
 
   const addHandler = () => {
     const generatedId = Number(new Date());
-    const newLayer = {
+    const newLayer: ILayer = {
       id: generatedId,
       icon: IconLayersSubtract,
       label: "Новый слой",
       isVisible: true,
+      opacity: "100%",
+      body: [],
     };
 
-    setLayers([newLayer, ...layers]);
-    setActive(generatedId);
+    dispatch(addLayer(newLayer));
+    dispatch(setActiveLayer(newLayer));
   };
 
   const mainLayers = layers.map((layer) => (
@@ -91,9 +80,9 @@ export function Layers() {
       p="xs"
       w="100%"
       className={cx(classes.layer, {
-        [classes.layerActive]: layer.id === active,
+        [classes.layerActive]: layer.id === active?.id,
       })}
-      onClick={() => setActive(layer.id)}
+      onClick={() => dispatch(setActiveLayer(layer))}
     >
       <Group>
         <layer.icon size={20} stroke={1.5} />
@@ -101,7 +90,10 @@ export function Layers() {
       </Group>
       <div>
         <Tooltip label="Видимость слоя" withArrow position="bottom">
-          <UnstyledButton mr="xs" onClick={() => visabilityHandler(layer.id)}>
+          <UnstyledButton
+            mr="xs"
+            onClick={() => dispatch(toggleVisability(layer))}
+          >
             {layer.isVisible ? (
               <IconEye size={20} stroke={1.5} />
             ) : (
@@ -110,7 +102,7 @@ export function Layers() {
           </UnstyledButton>
         </Tooltip>
         <Tooltip label="Удалить слой" withArrow position="bottom">
-          <UnstyledButton onClick={() => deleteHandler(layer.id)}>
+          <UnstyledButton onClick={() => dispatch(deleteLayer(layer.id))}>
             <IconTrash size={20} stroke={1.5} />
           </UnstyledButton>
         </Tooltip>
