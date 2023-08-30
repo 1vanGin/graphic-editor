@@ -1,0 +1,18 @@
+.toolbar-contener {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+}
+
+.toolbar {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: white;
+}
+
+.color-picker {
+  position: fixed;
+  top: 140px;
+  left: 70px;
+}
