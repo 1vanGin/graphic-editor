@@ -7,6 +7,7 @@ import {
   Tooltip,
   getStylesRef,
   Flex,
+  Space,
 } from "@mantine/core";
 import {
   IconTrash,
@@ -16,6 +17,7 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import { useState } from "react";
+import { SliderHover } from "shared/SliderHover/ui";
 
 const useStyles = createStyles((theme) => ({
   layer: {
@@ -128,6 +130,9 @@ export function Layers() {
           </ActionIcon>
         </Tooltip>
       </Group>
+      <Space h="sm" />
+      <SliderHover />
+      <Space h="md" />
       <Flex
         px="xs"
         mb="xs"
