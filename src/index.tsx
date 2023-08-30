@@ -1,13 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
 import { MantineProvider } from "@mantine/core";
-import "./index.css";
 import App from "app";
+import { store } from "./app/store/store.tsx";
+
+import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <MantineProvider withGlobalStyles withNormalizeCSS>
-      <App />
-    </MantineProvider>
+    <Provider store={store}>
+      <MantineProvider withGlobalStyles withNormalizeCSS>
+        <App />
+      </MantineProvider>
+    </Provider>
   </React.StrictMode>
 );
