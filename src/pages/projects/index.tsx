@@ -1,13 +1,15 @@
 import { useParams } from "react-router";
 import Toolbar from "widgets/Toolbar/ui";
+import { Sidebar } from "widgets/Sidebar/ui";
 
 const ProjectPage = () => {
   const { id } = useParams();
   return (
-    <>
-      <Toolbar />
-      <div>Project {id}</div>
-    </>
+      <>
+          <Toolbar />
+          <div>Project {id}</div>
+          <Sidebar />
+      </>
   );
 };
 
