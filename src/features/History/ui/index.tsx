@@ -1,9 +1,11 @@
 import { createStyles, Text, Group, getStylesRef, Flex } from "@mantine/core";
-import { IconCircle, IconPencil, IconLine } from "@tabler/icons-react";
-import { useState } from "react";
+import { useAppSelector, useAppDispatch } from "app/store/hooks";
+import { IHistoryAction } from "./types";
+import { toggleCanceledAction } from "../model/slice";
 
 const useStyles = createStyles((theme) => ({
   action: {
+    cursor: "pointer",
     "&:hover": {
       backgroundColor: theme.colors.gray[0],
       color: theme.black,
@@ -20,17 +22,13 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const actions = [
-  { id: 1, icon: IconCircle, label: "Действие 3" },
-  { id: 2, icon: IconPencil, label: "Действие 2" },
-  { id: 3, icon: IconLine, label: "Действие 1" },
-];
-
 export function History() {
   const { classes, cx } = useStyles();
-  const [active, setActive] = useState(1);
 
-  const mainActions = actions.map((action) => (
+  const dispatch = useAppDispatch();
+  const { history } = useAppSelector((state) => state.history);
+
+  const mainActions = history.map((action: IHistoryAction) => (
     <Group
       key={action.id}
       position="apart"
@@ -39,9 +37,9 @@ export function History() {
       p="xs"
       w="100%"
       className={cx(classes.action, {
-        [classes.actionActive]: action.id === active,
+        [classes.actionActive]: action.isCancel,
       })}
-      onClick={() => setActive(action.id)}
+      onClick={() => dispatch(toggleCanceledAction(action))}
     >
       <Group>
         <action.icon size={20} stroke={1.5} />
