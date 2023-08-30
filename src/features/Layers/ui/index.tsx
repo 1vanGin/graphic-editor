@@ -1,12 +1,12 @@
 import {
   createStyles,
-  rem,
   UnstyledButton,
   Text,
   Group,
   ActionIcon,
   Tooltip,
   getStylesRef,
+  Flex,
 } from "@mantine/core";
 import {
   IconTrash,
@@ -18,52 +18,11 @@ import {
 import { useState } from "react";
 
 const useStyles = createStyles((theme) => ({
-  layers: {
-    paddingLeft: `calc(${theme.spacing.md} - ${theme.spacing.xs})`,
-    paddingRight: `calc(${theme.spacing.md} - ${theme.spacing.xs})`,
-    paddingBottom: theme.spacing.md,
-  },
-
   layer: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    fontSize: theme.fontSizes.xs,
-    padding: `${rem(8)} ${theme.spacing.xs}`,
-    borderRadius: theme.radius.sm,
-    fontWeight: 500,
-    color:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[0]
-        : theme.colors.gray[7],
-
     "&:hover": {
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[6]
-          : theme.colors.gray[0],
-      color: theme.colorScheme === "dark" ? theme.white : theme.black,
+      backgroundColor: theme.colors.gray[0],
+      color: theme.black,
     },
-  },
-
-  layerInner: {
-    display: "flex",
-    alignItems: "center",
-  },
-
-  layerIcon: {
-    marginRight: theme.spacing.sm,
-    color:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[2]
-        : theme.colors.gray[6],
-  },
-
-  layerHeader: {
-    paddingLeft: `calc(${theme.spacing.md} + ${rem(2)})`,
-    paddingRight: theme.spacing.md,
-    marginBottom: rem(5),
   },
 
   layerActive: {
@@ -122,41 +81,44 @@ export function Layers() {
   };
 
   const mainLayers = layers.map((layer) => (
-    <UnstyledButton
+    <Group
       key={layer.id}
+      position="apart"
+      fz="xs"
+      fw="500"
+      p="xs"
+      w="100%"
       className={cx(classes.layer, {
         [classes.layerActive]: layer.id === active,
       })}
       onClick={() => setActive(layer.id)}
     >
-      <div className={classes.layerInner}>
-        <layer.icon size={20} className={classes.layerIcon} stroke={1.5} />
+      <Group>
+        <layer.icon size={20} stroke={1.5} />
         <span>{layer.label}</span>
+      </Group>
+      <div>
+        <Tooltip label="Видимость слоя" withArrow position="bottom">
+          <UnstyledButton mr="xs" onClick={() => visabilityHandler(layer.id)}>
+            {layer.isVisible ? (
+              <IconEye size={20} stroke={1.5} />
+            ) : (
+              <IconEyeOff size={20} stroke={1.5} />
+            )}
+          </UnstyledButton>
+        </Tooltip>
+        <Tooltip label="Удалить слой" withArrow position="bottom">
+          <UnstyledButton onClick={() => deleteHandler(layer.id)}>
+            <IconTrash size={20} stroke={1.5} />
+          </UnstyledButton>
+        </Tooltip>
       </div>
-      <div className={classes.layerInner}>
-        <UnstyledButton
-          className={classes.layer}
-          onClick={() => visabilityHandler(layer.id)}
-        >
-          {layer.isVisible ? (
-            <IconEye size={20} className={classes.layerIcon} stroke={1.5} />
-          ) : (
-            <IconEyeOff size={20} className={classes.layerIcon} stroke={1.5} />
-          )}
-        </UnstyledButton>
-        <UnstyledButton
-          className={classes.layer}
-          onClick={() => deleteHandler(layer.id)}
-        >
-          <IconTrash size={20} className={classes.layerIcon} stroke={1.5} />
-        </UnstyledButton>
-      </div>
-    </UnstyledButton>
+    </Group>
   ));
 
   return (
     <>
-      <Group className={classes.layerHeader} position="apart">
+      <Group px="md" mb="xs" position="apart">
         <Text size="xs" weight={500} color="dimmed">
           Слои
         </Text>
@@ -166,7 +128,16 @@ export function Layers() {
           </ActionIcon>
         </Tooltip>
       </Group>
-      <div className={classes.layers}>{mainLayers}</div>
+      <Flex
+        px="xs"
+        mb="xs"
+        justify="center"
+        align="flex-start"
+        direction="column"
+        wrap="wrap"
+      >
+        {mainLayers}
+      </Flex>
     </>
   );
 }
