@@ -7,7 +7,7 @@ import {
   Tooltip,
   getStylesRef,
   Flex,
-  Space,
+  Stack,
 } from "@mantine/core";
 import {
   IconTrash,
@@ -122,9 +122,12 @@ export function Layers() {
           </ActionIcon>
         </Tooltip>
       </Group>
-      <Space h="sm" />
-      <SliderHover />
-      <Space h="md" />
+      {active && (
+        <Stack my="sm" px="sm">
+          <SliderHover />
+        </Stack>
+      )}
+
       <Flex
         px="xs"
         mb="xs"
