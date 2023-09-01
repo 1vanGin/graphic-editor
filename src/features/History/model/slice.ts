@@ -37,9 +37,7 @@ export const historySlice = createSlice({
       state.history.push(action.payload);
     },
     toggleCanceledAction(state, action: PayloadAction<IHistoryAction>) {
-      const findIndex = state.history.findIndex(
-        (item) => item.id == action.payload.id
-      );
+      const findIndex = state.history.findIndex((item) => item.id == action.payload.id);
       state.history[findIndex].isCancel = !action.payload.isCancel;
     },
   },

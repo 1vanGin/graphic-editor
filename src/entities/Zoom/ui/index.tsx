@@ -9,13 +9,7 @@ export function Zoom() {
   const dispatch = useAppDispatch();
   const zoomValue = useAppSelector((state) => state.zoom.zoomValue);
   return (
-    <Card
-      display="flex"
-      shadow="sm"
-      padding="sm"
-      radius="md"
-      className="bottombar_card"
-    >
+    <Card display="flex" shadow="sm" padding="sm" radius="md">
       <IconButton
         icon={<IconMinus size="1rem" color="black" />}
         variant={"subtle"}
