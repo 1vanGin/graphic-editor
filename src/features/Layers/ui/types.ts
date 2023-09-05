@@ -3,8 +3,10 @@ import { TablerIconsProps } from "@tabler/icons-react";
 export interface ILayer {
   id: number;
   label: string;
+  url: string;
   isVisible: boolean;
-  opacity: string;
-  icon: (props: TablerIconsProps) => JSX.Element;
-  body: [];
+  sortOrder: number;
+  opacity: number;
+  icon?: (props: TablerIconsProps) => JSX.Element;
+  // body: [];
 }

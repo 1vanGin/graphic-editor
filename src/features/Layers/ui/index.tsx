@@ -63,8 +63,10 @@ export function Layers() {
       icon: IconLayersSubtract,
       label: "Новый слой",
       isVisible: true,
-      opacity: "100%",
-      body: [],
+      opacity: 100,
+      url: "",
+      sortOrder: 0,
+      // body: [],
     };
 
     dispatch(addLayer(newLayer));
