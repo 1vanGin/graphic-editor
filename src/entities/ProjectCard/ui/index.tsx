@@ -1,31 +1,31 @@
 import "./index.css";
 import {
+  ActionIcon,
   Card as MantineCard,
   Group as MantineGroup,
-  Text as MantineText,
   Image,
   Menu,
-  ActionIcon,
-  rem,
   Modal,
+  rem,
+  Text as MantineText,
 } from "@mantine/core";
 import {
   IconDots,
   IconEye,
   IconFileTypePng,
-  IconTrash,
   IconPencil,
+  IconTrash,
 } from "@tabler/icons-react";
 import { IProjectCard } from "../interfaces";
 import {
   deleteProject,
   updateProject,
 } from "widgets/ProjectCardList/model/slice";
-import { store } from "app/store/store";
 import { Link, useNavigate } from "react-router-dom";
 import { EditProjectForm } from "shared/EditProjectForm";
 import { useState } from "react";
-import { useFirebaseDb } from "../../../shared/hooks";
+import { useFirebaseDb } from "shared/hooks";
+import { useAppDispatch } from "app/store/hooks.ts";
 
 type ProjectCardType = {
   project: IProjectCard;
@@ -35,16 +35,17 @@ export const ProjectCard: React.FC<ProjectCardType> = ({ project }) => {
   const navigate = useNavigate();
   const [opened, setOpened] = useState(false);
   const { deleteProjectFromDB, updateProjectValues } = useFirebaseDb();
+  const dispatch = useAppDispatch();
 
   const onSaveHandler = (values: IProjectCard) => {
-    store.dispatch(updateProject({ id: project.id, data: values }));
+    dispatch(updateProject({ id: project.id, data: values }));
     updateProjectValues(values).finally(() => {
       setOpened(false);
     });
   };
 
   const deleteProjectHandle = () => {
-    store.dispatch(deleteProject(project.id));
+    dispatch(deleteProject(project.id));
     deleteProjectFromDB(project.id);
   };
 

@@ -1,10 +1,10 @@
 import { Button, Modal } from "@mantine/core";
 import { ReactElement, useState } from "react";
 import { NewProjectForm } from "shared/NewProjectForm";
-import { store } from "app/store/store";
 import { createProject } from "widgets/ProjectCardList/model/slice";
 import { FormValues, ProjectProp } from "shared/NewProjectForm/interfaces";
 import { useFirebaseDb } from "../../../shared/hooks";
+import { useAppDispatch } from "../../../app/store/hooks.ts";
 
 type CreateProjectType = {
   children: ReactElement | ReactElement[] | string;
@@ -13,8 +13,9 @@ type CreateProjectType = {
 export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
   const [opened, setOpened] = useState(false);
   const { addProject } = useFirebaseDb();
+  const dispatch = useAppDispatch();
 
-  const onCreatehandler = (values: FormValues) => {
+  const onCreateHandler = (values: FormValues) => {
     const payload: ProjectProp = {
       id: crypto.randomUUID(),
       name: values.name,
@@ -23,10 +24,11 @@ export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
       preview: "",
     };
 
-    store.dispatch(createProject(payload));
+    dispatch(createProject(payload));
     addProject(payload);
     setOpened(false);
   };
+
   return (
     <>
       <Button onClick={() => setOpened(true)}>{children}</Button>
@@ -36,7 +38,7 @@ export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
         title="Add new project"
         centered
       >
-        <NewProjectForm onCreate={onCreatehandler} />
+        <NewProjectForm onCreate={onCreateHandler} />
       </Modal>
     </>
   );
