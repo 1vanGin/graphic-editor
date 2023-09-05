@@ -1,6 +1,7 @@
 import { IProjectCard } from "./../../../entities/ProjectCard/interfaces/index";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ProjectsState } from "./types.ts";
+import { RootState } from "app/store/store.tsx";
 
 const initialState: ProjectsState = {
     projects: [

@@ -6,6 +6,7 @@ import { useViewportSize } from "@mantine/hooks";
 
 export const ProjectCardList = () => {
     const { projects } = useAppSelector((state) => state.projects);
+    
     const { height } = useViewportSize();
     return (
         <>

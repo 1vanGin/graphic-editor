@@ -1,0 +1,15 @@
+canvas {
+    background: white;
+}
+
+.canvas-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+html, body {
+    height: 100%;
+    background-color: lightgrey;
+}

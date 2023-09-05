@@ -1,9 +1,20 @@
-import { TablerIconsProps } from "@tabler/icons-react";
+type Point = { x: number; y: number };
+
+export enum Instrument {
+    line,
+    brush,
+    ellipse,
+    rectangle,
+    eraser
+  }
 
 export interface IHistoryAction {
-  id: number;
-  label: string;
-  isCancel: boolean;
-  icon: (props: TablerIconsProps) => JSX.Element;
-  body: [];
+    id: string;
+    label: string;
+    isCancel: boolean;
+    instrument: Instrument;
+    startPoint: Point;
+    flashingPoints: Point[];
+    endPoint: Point;
+    layerId: string;
 }

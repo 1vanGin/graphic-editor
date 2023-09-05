@@ -37,13 +37,13 @@ export const NewProjectForm: React.FC<NewProjectFormType> = ({ onCreate }) => {
                     label="Width"
                     placeholder="0"
                     min={1}
-                    {...form.getInputProps("height")}
+                    {...form.getInputProps("width")}
                 />
                 <NumberInput
                     label="Height"
                     placeholder="0"
                     min={1}
-                    {...form.getInputProps("width")}
+                    {...form.getInputProps("height")}
                 />
 
                 <Group position="center" mt="xl">
