@@ -1,12 +1,5 @@
-export type typeButttonClick =
-  | "brush"
-  | "eraser"
-  | "line"
-  | "figure"
-  | "color"
-  | null;
-
+import { Instrument } from "features/History/ui/types";
 export interface ToolbarState {
   color: string;
-  typeTool: "brush" | "eraser" | "line" | "figure" | null;
+  typeTool: Instrument;
 }
