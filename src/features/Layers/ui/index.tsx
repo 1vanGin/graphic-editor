@@ -23,8 +23,10 @@ import {
   deleteLayer,
   setActiveLayer,
   toggleVisability,
+  changeLayerLabel,
 } from "../model/slice";
 import { ILayer } from "./types";
+import { EditableText } from "shared/EditableText";
 
 const useStyles = createStyles((theme) => ({
   layer: {
@@ -55,6 +57,17 @@ export function Layers() {
   const dispatch = useAppDispatch();
   const layers = useAppSelector((state) => state.layers.layers);
   const active = useAppSelector((state) => state.layers.activeLayer);
+
+  const handleEditableTextChange = (
+    event: React.FormEvent<HTMLInputElement>
+  ) => {
+    dispatch(
+      changeLayerLabel({
+        id: +event.currentTarget.id,
+        newLabel: event.currentTarget.value,
+      })
+    );
+  };
 
   const addHandler = () => {
     const generatedId = Number(new Date());
@@ -88,7 +101,11 @@ export function Layers() {
     >
       <Group>
         <layer.icon size={20} stroke={1.5} />
-        <span>{layer.label}</span>
+        <EditableText
+          id={`${layer.id}`}
+          text={layer.label}
+          handleChange={handleEditableTextChange}
+        />
       </Group>
       <div>
         <Tooltip label="Видимость слоя" withArrow position="bottom">
