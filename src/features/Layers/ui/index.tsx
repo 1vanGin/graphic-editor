@@ -9,13 +9,7 @@ import {
   Flex,
   Stack,
 } from "@mantine/core";
-import {
-  IconTrash,
-  IconLayersSubtract,
-  IconEye,
-  IconEyeOff,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconTrash, IconLayersSubtract, IconEye, IconEyeOff, IconPlus } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { SliderHover } from "shared/SliderHover/ui";
 import {
@@ -23,8 +17,10 @@ import {
   deleteLayer,
   setActiveLayer,
   toggleVisability,
+  changeLayerLabel,
 } from "../model/slice";
 import { ILayer } from "./types";
+import { EditableText } from "shared/EditableText";
 
 const useStyles = createStyles((theme) => ({
   layer: {
@@ -40,11 +36,9 @@ const useStyles = createStyles((theme) => ({
         variant: "light",
         color: theme.primaryColor,
       }).background,
-      color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-        .color,
+      color: theme.fn.variant({ variant: "light", color: theme.primaryColor }).color,
       [`& .${getStylesRef("icon")}`]: {
-        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-          .color,
+        color: theme.fn.variant({ variant: "light", color: theme.primaryColor }).color,
       },
     },
   },
@@ -55,6 +49,15 @@ export function Layers() {
   const dispatch = useAppDispatch();
   const layers = useAppSelector((state) => state.layers.layers);
   const active = useAppSelector((state) => state.layers.activeLayer);
+
+  const handleEditableTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(
+      changeLayerLabel({
+        id: +event.currentTarget.id,
+        newLabel: event.currentTarget.value,
+      })
+    );
+  };
 
   const addHandler = () => {
     const generatedId = Number(new Date());
@@ -88,14 +91,15 @@ export function Layers() {
     >
       <Group>
         <layer.icon size={20} stroke={1.5} />
-        <span>{layer.label}</span>
+        <EditableText
+          id={`${layer.id}`}
+          text={layer.label}
+          handleChange={handleEditableTextChange}
+        />
       </Group>
       <div>
         <Tooltip label="Видимость слоя" withArrow position="bottom">
-          <UnstyledButton
-            mr="xs"
-            onClick={() => dispatch(toggleVisability(layer))}
-          >
+          <UnstyledButton mr="xs" onClick={() => dispatch(toggleVisability(layer))}>
             {layer.isVisible ? (
               <IconEye size={20} stroke={1.5} />
             ) : (
@@ -130,14 +134,7 @@ export function Layers() {
         </Stack>
       )}
 
-      <Flex
-        px="xs"
-        mb="xs"
-        justify="center"
-        align="flex-start"
-        direction="column"
-        wrap="wrap"
-      >
+      <Flex px="xs" mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
         {mainLayers}
       </Flex>
     </>
