@@ -50,7 +50,7 @@ export function Layers() {
   const layers = useAppSelector((state) => state.layers.layers);
   const active = useAppSelector((state) => state.layers.activeLayer);
 
-  const handleEditableTextChange = (event: React.FormEvent<HTMLInputElement>) => {
+  const handleEditableTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(
       changeLayerLabel({
         id: +event.currentTarget.id,
