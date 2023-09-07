@@ -18,6 +18,8 @@ import {
   setActiveLayer,
   toggleVisability,
   changeLayerLabel,
+  dragLayer,
+  setLayersOrder,
 } from "../model/slice";
 import { ILayer } from "./types";
 import { EditableText } from "shared/EditableText";
@@ -47,9 +49,8 @@ const useStyles = createStyles((theme) => ({
 export function Layers() {
   const { classes, cx } = useStyles();
   const dispatch = useAppDispatch();
-  const layers = useAppSelector((state) => state.layers.layers);
+  const { layers } = useAppSelector((state) => state.layers);
   const active = useAppSelector((state) => state.layers.activeLayer);
-
   const handleEditableTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(
       changeLayerLabel({
@@ -75,19 +76,56 @@ export function Layers() {
     dispatch(addLayer(newLayer));
     dispatch(setActiveLayer(newLayer));
   };
+  const dragStartHandler = (layer: ILayer) => {
+    dispatch(dragLayer(layer));
+    console.log("dragStartHandler");
+  };
 
-  const mainLayers = layers.map((layer) => (
+  const dragEndHandler = (event: any) => {
+    event.target.style.border = "none";
+    console.log("dragEndHandler");
+  };
+
+  const dragOverHandler = (event: any) => {
+    event.preventDefault();
+    event.target.style.border = "0.0625rem solid #dee2e6";
+    console.log("dragOverHandler");
+  };
+
+  const dropHandler = (event: any, layer: ILayer) => {
+    event.preventDefault();
+    dispatch(setLayersOrder(layer));
+    event.target.style.border = "none";
+    dispatch(dragLayer(null));
+    console.log("dropHandler");
+  };
+
+  const sortLayers = (a: ILayer, b: ILayer) => {
+    if (a.sortOrder > b.sortOrder) {
+      return 1;
+    } else {
+      return -1;
+    }
+  };
+
+  const mainLayers = [...layers].sort(sortLayers).map((layer) => (
     <Group
+      draggable
       key={layer.id}
       position="apart"
       fz="xs"
-      fw="500"
+      // fw="500"
       p="xs"
       w="100%"
       className={cx(classes.layer, {
         [classes.layerActive]: layer.id === active?.id,
       })}
       onClick={() => dispatch(setActiveLayer(layer))}
+      onDragStart={() => dragStartHandler(layer)}
+      onDragLeave={(event) => dragEndHandler(event)}
+      onDragEnd={(event) => dragEndHandler(event)}
+      onDragOver={(event) => dragOverHandler(event)}
+      onDrag={(event) => dropHandler(event, layer)}
     >
       <Group>
         <layer.icon size={20} stroke={1.5} />

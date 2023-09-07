@@ -11,7 +11,7 @@ const initialState: LayersState = {
       icon: IconLayersSubtract,
       isVisible: true,
       opacity: 100,
-      sortOrder: 0,
+      sortOrder: 1,
       url: "",
     },
     {
@@ -20,7 +20,7 @@ const initialState: LayersState = {
       icon: IconLayersSubtract,
       isVisible: true,
       opacity: 100,
-      sortOrder: 1,
+      sortOrder: 2,
       url: "",
     },
     {
@@ -29,11 +29,12 @@ const initialState: LayersState = {
       icon: IconLayersSubtract,
       isVisible: false,
       opacity: 100,
-      sortOrder: 1,
+      sortOrder: 3,
       url: "",
     },
   ],
   activeLayer: null,
+  dragLayer: null,
 };
 
 export const layersSlice = createSlice({
@@ -47,26 +48,35 @@ export const layersSlice = createSlice({
       state.layers.push(action.payload);
     },
     deleteLayer(state, action: PayloadAction<number>) {
-      const filteredLayers = state.layers.filter(
-        (item) => item.id !== action.payload
-      );
+      const filteredLayers = state.layers.filter((item) => item.id !== action.payload);
       state.layers = filteredLayers;
     },
     toggleVisability(state, action: PayloadAction<ILayer>) {
-      const findIndex = state.layers.findIndex(
-        (item) => item.id == action.payload.id
-      );
+      const findIndex = state.layers.findIndex((item) => item.id == action.payload.id);
       state.layers[findIndex].isVisible = !action.payload.isVisible;
     },
-    changeLayerLabel(
-      state,
-      action: PayloadAction<{ id: number; newLabel: string }>
-    ) {
+    changeLayerLabel(state, action: PayloadAction<{ id: number; newLabel: string }>) {
       state.layers.map((item) => {
         if (action.payload.id === item.id) {
           return (item.label = action.payload.newLabel);
         }
       });
+    },
+    dragLayer(state, action: PayloadAction<ILayer | null>) {
+      state.dragLayer = action.payload;
+    },
+    setLayersOrder(state, action: PayloadAction<ILayer>) {
+      const updatedLayers = state.layers.map((layer) => {
+        if (layer?.id === action.payload?.id) {
+          return { ...layer, sortOrder: state.dragLayer?.sortOrder };
+        }
+        if (layer?.id === state.dragLayer?.id) {
+          return { ...layer, sortOrder: action.payload?.id };
+        }
+        return layer;
+      });
+
+      state.layers = updatedLayers as ILayer[];
     },
   },
 });
@@ -77,4 +87,6 @@ export const {
   toggleVisability,
   setActiveLayer,
   changeLayerLabel,
+  dragLayer,
+  setLayersOrder,
 } = layersSlice.actions;
