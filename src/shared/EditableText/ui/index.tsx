@@ -4,14 +4,10 @@ import "./index.css";
 interface IEditableTextProps {
   text: string;
   id: string;
-  handleChange: (event: React.FormEvent<HTMLInputElement>) => void;
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const EditableText = ({
-  text,
-  handleChange,
-  id,
-}: IEditableTextProps) => {
+export const EditableText = ({ text, handleChange, id }: IEditableTextProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleDoubleClick = () => {
