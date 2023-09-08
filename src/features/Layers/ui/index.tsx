@@ -8,6 +8,7 @@ import {
   getStylesRef,
   Flex,
   Stack,
+  ScrollArea,
 } from "@mantine/core";
 import { IconTrash, IconLayersSubtract, IconEye, IconEyeOff, IconPlus } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
@@ -133,10 +134,11 @@ export function Layers() {
           <SliderHover />
         </Stack>
       )}
-
-      <Flex px="xs" mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
-        {mainLayers}
-      </Flex>
+      <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>
+        <Flex px="xs" mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
+          {mainLayers}
+        </Flex>
+      </ScrollArea>
     </>
   );
 }
