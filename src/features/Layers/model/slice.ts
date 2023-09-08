@@ -47,21 +47,14 @@ export const layersSlice = createSlice({
       state.layers.push(action.payload);
     },
     deleteLayer(state, action: PayloadAction<number>) {
-      const filteredLayers = state.layers.filter(
-        (item) => item.id !== action.payload
-      );
+      const filteredLayers = state.layers.filter((item) => item.id !== action.payload);
       state.layers = filteredLayers;
     },
     toggleVisability(state, action: PayloadAction<ILayer>) {
-      const findIndex = state.layers.findIndex(
-        (item) => item.id == action.payload.id
-      );
+      const findIndex = state.layers.findIndex((item) => item.id == action.payload.id);
       state.layers[findIndex].isVisible = !action.payload.isVisible;
     },
-    changeLayerLabel(
-      state,
-      action: PayloadAction<{ id: number; newLabel: string }>
-    ) {
+    changeLayerLabel(state, action: PayloadAction<{ id: number; newLabel: string }>) {
       state.layers.map((item) => {
         if (action.payload.id === item.id) {
           return (item.label = action.payload.newLabel);
@@ -71,10 +64,5 @@ export const layersSlice = createSlice({
   },
 });
 
-export const {
-  addLayer,
-  deleteLayer,
-  toggleVisability,
-  setActiveLayer,
-  changeLayerLabel,
-} = layersSlice.actions;
+export const { addLayer, deleteLayer, toggleVisability, setActiveLayer, changeLayerLabel } =
+  layersSlice.actions;

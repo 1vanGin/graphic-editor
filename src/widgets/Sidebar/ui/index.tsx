@@ -1,7 +1,7 @@
 import "./index.css";
 import { createStyles, Navbar, rem } from "@mantine/core";
 import { History } from "features/History";
-import { Layers } from "features/Layers/ui";
+import { Layers } from "features/Layers";
 
 const useStyles = createStyles((theme) => ({
   navbar: {
