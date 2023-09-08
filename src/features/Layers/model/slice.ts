@@ -44,19 +44,14 @@ export const layersSlice = createSlice({
       state.layers.push(action.payload);
     },
     deleteLayer(state, action: PayloadAction<number>) {
-      const filteredLayers = state.layers.filter(
-        (item) => item.id !== action.payload
-      );
+      const filteredLayers = state.layers.filter((item) => item.id !== action.payload);
       state.layers = filteredLayers;
     },
     toggleVisability(state, action: PayloadAction<ILayer>) {
-      const findIndex = state.layers.findIndex(
-        (item) => item.id == action.payload.id
-      );
+      const findIndex = state.layers.findIndex((item) => item.id == action.payload.id);
       state.layers[findIndex].isVisible = !action.payload.isVisible;
     },
   },
 });
 
-export const { addLayer, deleteLayer, toggleVisability, setActiveLayer } =
-  layersSlice.actions;
+export const { addLayer, deleteLayer, toggleVisability, setActiveLayer } = layersSlice.actions;

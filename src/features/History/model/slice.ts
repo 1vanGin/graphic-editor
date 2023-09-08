@@ -9,7 +9,7 @@ const initialState: HistoryState = {
       id: 1,
       label: "Действие 1",
       icon: IconCircle,
-      isCancel: true,
+      isCancel: false,
       body: [],
     },
     {
@@ -40,7 +40,27 @@ export const historySlice = createSlice({
       const findIndex = state.history.findIndex((item) => item.id == action.payload.id);
       state.history[findIndex].isCancel = !action.payload.isCancel;
     },
+    undo(state) {
+      let isActionFound = false;
+      state.history.map((item) => {
+        if (!item.isCancel && !isActionFound) {
+          item.isCancel = true;
+          isActionFound = true;
+          return item;
+        }
+        return item;
+      });
+    },
+    redo(state) {
+      let isActionFound = false;
+      for (let i = state.history.length - 1; i >= 0; i--) {
+        if (state.history[i].isCancel && !isActionFound) {
+          state.history[i].isCancel = false;
+          isActionFound = true;
+        }
+      }
+    },
   },
 });
 
-export const { addAction, toggleCanceledAction } = historySlice.actions;
+export const { addAction, toggleCanceledAction, undo, redo } = historySlice.actions;
