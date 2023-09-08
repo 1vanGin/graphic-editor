@@ -1,30 +1,38 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { HistoryState } from "./types";
-import { IconCircle, IconLine, IconPencil } from "@tabler/icons-react";
-import { IHistoryAction } from "../ui/types";
+import { IHistoryAction, Instrument } from "../ui/types";
 
 const initialState: HistoryState = {
   history: [
     {
-      id: 1,
+      id: "1",
       label: "Действие 1",
-      icon: IconCircle,
+      instrument: Instrument.ellipse,
       isCancel: false,
-      body: [],
+      startPoint: { x: 0, y: 0 },
+      flashingPoints: [],
+      endPoint: { x: 0, y: 0 },
+      layerId: "l1",
     },
     {
-      id: 2,
+      id: "2",
       label: "Действие 2",
-      icon: IconPencil,
+      instrument: Instrument.brush,
       isCancel: false,
-      body: [],
+      startPoint: { x: 0, y: 0 },
+      flashingPoints: [],
+      endPoint: { x: 0, y: 0 },
+      layerId: "l2",
     },
     {
-      id: 3,
+      id: "3",
       label: "Действие 3",
-      icon: IconLine,
+      instrument: Instrument.line,
       isCancel: false,
-      body: [],
+      startPoint: { x: 0, y: 0 },
+      flashingPoints: [],
+      endPoint: { x: 0, y: 0 },
+      layerId: "l3",
     },
   ],
 };
@@ -34,7 +42,8 @@ export const historySlice = createSlice({
   initialState,
   reducers: {
     addAction(state, action: PayloadAction<IHistoryAction>) {
-      state.history.push(action.payload);
+      console.log("action.payload", action.payload);
+      state.history.unshift(action.payload);
     },
     toggleCanceledAction(state, action: PayloadAction<IHistoryAction>) {
       const findIndex = state.history.findIndex((item) => item.id == action.payload.id);

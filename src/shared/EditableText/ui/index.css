@@ -1,0 +1,6 @@
+.EditableText_input:focus {
+  border: 0;
+  outline: 0;
+  font-size: 12px;
+  background-color: rgba(231, 245, 255, 1);
+}
