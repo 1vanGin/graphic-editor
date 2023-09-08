@@ -1,10 +1,10 @@
 import { Button, Modal } from "@mantine/core";
 import { ReactElement, useState } from "react";
-import { NewProjectForm } from "shared/ui";
+import { NewProjectForm } from "shared/NewProjectForm";
 import { createProject } from "widgets/ProjectCardList/model/slice";
-import { FormValues, ProjectProp } from "shared/ui/NewProjectForm/interfaces";
-import { useFirebaseDb } from "shared/hooks";
-import { useAppDispatch } from "app/store/hooks.ts";
+import { FormValues, ProjectProp } from "shared/NewProjectForm/interfaces";
+import { useFirebaseDb } from "../../../shared/hooks";
+import { useAppDispatch } from "../../../app/store/hooks.ts";
 
 type CreateProjectType = {
   children: ReactElement | ReactElement[] | string;
@@ -21,7 +21,6 @@ export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
       name: values.name,
       width: values.width,
       height: values.height,
-      createdDate: new Date().getTime(),
       preview: "",
     };
 
@@ -36,7 +35,7 @@ export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
-        title="Добавить новый проект"
+        title="Add new project"
         centered
       >
         <NewProjectForm onCreate={onCreateHandler} />
