@@ -1,45 +1,54 @@
 import {
   deleteObject,
   getBlob,
-  // getDownloadURL,
+  getDownloadURL,
   ref,
-  uploadBytes,
+  uploadBytesResumable,
 } from "@firebase/storage";
 import { firebaseStorage } from "../../app/firebase";
 import { useState } from "react";
 import { saveBlob } from "../helpers";
+import { getStorage } from "firebase/storage";
 
 export const useFirebaseStorage = () => {
+  const storage = getStorage();
   const [isUploading, setIsUploading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  const uploadFile = (projectId: string, image: File) => {
-    if (image) {
-      setIsUploading(true);
-      const imageRef = ref(firebaseStorage, `${projectId}/${image?.name}`);
-      uploadBytes(imageRef, image)
-        .then((snapshot) => {
-          console.log("Uploaded a blob or file!", snapshot);
-        })
-        .catch((error) => {
-          console.log("Something in storage went wrong...", error);
-        })
-        .finally(() => {
-          setIsUploading(false);
-        });
-    }
+  const [imageLink, setImageLink] = useState("");
+
+  const getImageLink = (projectId: string, imageName: string) => {
+    getDownloadURL(ref(storage, `${projectId}/${imageName}.png`))
+      .then((url) => {
+        setImageLink(url);
+      })
+      .catch((error) => {
+        console.log("Something in storage went wrong...", error);
+      });
   };
 
-  // const getImageLink = (projectId: string, imageName: string) => {
-  //   const imageRef = ref(firebaseStorage, `${projectId}/${imageName}`);
-  //   getDownloadURL(ref(imageRef, `${projectId}/${imageName}`))
-  //     .then((url) => {
-  //       const img = document.getElementById("myimg");
-  //       img.setAttribute("src", url);
-  //     })
-  //     .catch((error) => {
-  //       console.log("Something in storage went wrong...", error);
-  //     });
-  // };
+  const uploadFile = (projectId: string, file: File) => {
+    if (!file) return;
+    setIsUploading(true);
+    const storageRef = ref(storage, `/${projectId}/${file?.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        console.log("Uploaded a blob or file!", snapshot);
+      },
+      (err) => {
+        if (err) {
+          console.log("Something in storage went wrong...", err);
+        }
+      },
+      () =>
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+          console.log(url);
+          setIsUploading(false);
+        }),
+    );
+  };
 
   const downloadFile = (projectId: string, imageName: string) => {
     const imageRef = ref(firebaseStorage, `${projectId}/${imageName}`);
@@ -73,6 +82,7 @@ export const useFirebaseStorage = () => {
     downloadFile,
     isDownloading,
     deleteFile,
-    // getImageLink
+    getImageLink,
+    imageLink,
   };
 };

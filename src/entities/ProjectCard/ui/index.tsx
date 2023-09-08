@@ -2,6 +2,7 @@ import "./index.css";
 import {
   ActionIcon,
   Card as MantineCard,
+  Center,
   Group as MantineGroup,
   Image,
   Menu,
@@ -23,8 +24,8 @@ import {
 } from "widgets/ProjectCardList/model/slice";
 import { Link, useNavigate } from "react-router-dom";
 import { EditProjectForm } from "shared/EditProjectForm";
-import { useState } from "react";
-import { useFirebaseDb } from "shared/hooks";
+import { useEffect, useState } from "react";
+import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
 import { useAppDispatch } from "app/store/hooks.ts";
 
 type ProjectCardType = {
@@ -35,7 +36,13 @@ export const ProjectCard: React.FC<ProjectCardType> = ({ project }) => {
   const navigate = useNavigate();
   const [opened, setOpened] = useState(false);
   const { deleteProjectFromDB, updateProjectValues } = useFirebaseDb();
+  const { getImageLink, imageLink } = useFirebaseStorage();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (project?.id && project?.name && project?.preview)
+      getImageLink(project.id, project.name);
+  }, []);
 
   const onSaveHandler = (values: IProjectCard) => {
     dispatch(updateProject({ id: project.id, data: values }));
@@ -68,23 +75,23 @@ export const ProjectCard: React.FC<ProjectCardType> = ({ project }) => {
                 color="green"
                 onClick={() => navigate(`/projects/${project.id}`)}
               >
-                Open
+                Открыть
               </Menu.Item>
               <Menu.Item icon={<IconFileTypePng size={rem(14)} />}>
-                Download
+                Скачать
               </Menu.Item>
               <Menu.Item
                 icon={<IconPencil size={rem(14)} />}
                 onClick={() => setOpened(true)}
               >
-                Rename
+                Переименовать
               </Menu.Item>
               <Menu.Item
                 icon={<IconTrash size={rem(14)} />}
                 color="red"
                 onClick={deleteProjectHandle}
               >
-                Delete
+                Удалить
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
@@ -92,13 +99,18 @@ export const ProjectCard: React.FC<ProjectCardType> = ({ project }) => {
       </MantineCard.Section>
       <Link to={`/projects/${project.id}`}>
         <MantineCard.Section mih={300}>
-          {project.preview && <Image src={project.preview} height={300} />}
+          {project.preview && <Image src={imageLink} height={300} />}
+          {!project.preview && (
+            <Center maw={400} h={300} mx="auto">
+              <div>Начните рисовать для превью</div>
+            </Center>
+          )}
         </MantineCard.Section>
       </Link>
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
-        title="Update project"
+        title="Обновить проект"
         centered
       >
         <EditProjectForm onSave={onSaveHandler} project={project} />
