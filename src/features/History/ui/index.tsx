@@ -86,7 +86,7 @@ export function History() {
         </Text>
       </Group>
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>
-        <Flex px="xs" mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
+        <Flex mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
           {mainActions}
         </Flex>
       </ScrollArea>

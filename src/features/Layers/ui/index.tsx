@@ -119,7 +119,7 @@ export function Layers() {
 
   return (
     <>
-      <Group px="md" mb="xs" position="apart">
+      <Group pl="md" pr="xl" my="sm" position="apart">
         <Text size="xs" weight={500} color="dimmed">
           Слои
         </Text>
@@ -130,12 +130,12 @@ export function Layers() {
         </Tooltip>
       </Group>
       {active && (
-        <Stack my="sm" px="sm">
+        <Stack my="sm" pl="md" pr="xl">
           <SliderHover />
         </Stack>
       )}
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>
-        <Flex px="xs" mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
+        <Flex mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
           {mainLayers}
         </Flex>
       </ScrollArea>
