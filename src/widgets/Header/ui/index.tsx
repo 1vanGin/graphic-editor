@@ -12,7 +12,7 @@ export const Header = () => {
           <span className="btn-text btn-file-text">Файл</span>
           <Card shadow="sm" padding="sm" radius="md" className="menu menu-file">
             <span className="menu-item">Новый проект</span>
-            <span className="menu-item">Сохронить</span>
+            <span className="menu-item">Сохранить</span>
             <span className="menu-item">Экспортировать PNG</span>
           </Card>
         </div>
