@@ -1,4 +1,4 @@
-import { ILayer } from "../../../features/Layers/ui/types.ts";
+import { ILayer } from "features/Layers/ui/types.ts";
 
 export interface FormValues {
   name: string;
@@ -11,6 +11,7 @@ export interface ProjectProp {
   name: string;
   width: number;
   height: number;
+  createdDate: number;
   preview?: string;
   layers?: {
     [key: string]: ILayer;
