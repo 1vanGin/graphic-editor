@@ -1,7 +1,7 @@
 import "./index.css";
 import { Card, createStyles, rem } from "@mantine/core";
 import { History } from "features/History";
-import { Layers } from "features/Layers/ui";
+import { Layers } from "features/Layers";
 
 const useStyles = createStyles((theme) => ({
   section: {
