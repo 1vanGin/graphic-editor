@@ -1,6 +1,6 @@
 import { useAppSelector } from "app/store/hooks.ts";
 import { CreateProject } from "features/CreateProject";
-import { ProjectCard } from "entities/ProjectCard/ui";
+import { ProjectCardWidget } from "widgets/ProjectCard/ProjectCardWidget.tsx";
 import { Center, Flex, SimpleGrid } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { useFirebaseDb } from "shared/hooks";
@@ -34,7 +34,7 @@ export const ProjectCardList = () => {
           </Flex>
           <SimpleGrid cols={3}>
             {projects.map((card) => (
-              <ProjectCard key={card.id as React.Key} project={card} />
+              <ProjectCardWidget key={card.id as React.Key} project={card} />
             ))}
           </SimpleGrid>
         </>

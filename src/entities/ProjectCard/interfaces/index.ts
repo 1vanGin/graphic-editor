@@ -11,3 +11,7 @@ export interface IProjectCard {
     [key: string]: ILayer;
   };
 }
+
+export interface ProjectModalProps {
+  projectId: IProjectCard["id"];
+}
