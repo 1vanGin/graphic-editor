@@ -4,6 +4,10 @@ import { rootReducer } from "./rootReducer.tsx";
 export const store = configureStore({
   reducer: rootReducer,
   devTools: true,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

@@ -1,13 +1,15 @@
 import { onValue, ref, remove, set, update } from "@firebase/database";
-import { firebaseDB } from "../../app/firebase";
-import { useEffect, useState } from "react";
+import { firebaseDB } from "app/firebase";
+import { useState } from "react";
 import { Database } from "../enums";
-import { ProjectProp } from "../NewProjectForm/interfaces";
+import { ProjectProp } from "shared/ui/NewProjectForm/interfaces";
+import { useAppDispatch } from "app/store/hooks.ts";
+import { setProjectsFromServer } from "widgets/ProjectCardList/model/slice.ts";
 
 export const useFirebaseDb = () => {
   const dbRef = ref(firebaseDB, Database.projects);
-  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
   // for example
   const addProject = (payload: ProjectProp) => {
@@ -18,6 +20,7 @@ export const useFirebaseDb = () => {
       name: payload.name,
       height: payload.height,
       width: payload.width,
+      createdDate: payload.createdDate,
       preview: "",
       layers: {},
     }).then(() => {
@@ -39,6 +42,7 @@ export const useFirebaseDb = () => {
       name: values.name,
       height: values.height,
       width: values.width,
+      createdDate: values.createdDate,
       preview: "",
       layers: {
         // for example
@@ -67,7 +71,7 @@ export const useFirebaseDb = () => {
       });
   };
 
-  const updateLocalProjects = () => {
+  const fetchProjects = () => {
     setLoading(true);
 
     // reading data from database
@@ -75,7 +79,13 @@ export const useFirebaseDb = () => {
       dbRef,
       (snapshot) => {
         const data = snapshot.val();
-        setProjects(data);
+        if (data) {
+          const projects: ProjectProp[] = Object.values(data);
+          const sortedProjects: ProjectProp[] = projects.sort((a, b) =>
+            a.createdDate > b.createdDate ? 1 : -1,
+          );
+          dispatch(setProjectsFromServer(sortedProjects));
+        }
         setLoading(false);
       },
       (error) => {
@@ -84,15 +94,11 @@ export const useFirebaseDb = () => {
     );
   };
 
-  useEffect(() => {
-    updateLocalProjects();
-  }, []);
-
   return {
     addProject,
     updateProjectValues,
     deleteProjectFromDB,
-    projects,
+    fetchProjects,
     loading,
   };
 };
