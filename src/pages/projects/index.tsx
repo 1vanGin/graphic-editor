@@ -1,4 +1,5 @@
 import { useParams } from "react-router";
+import { Header } from "widgets/Header/ui";
 import Toolbar from "widgets/Toolbar/ui";
 import { Sidebar } from "widgets/Sidebar/ui";
 import { Canvas } from "widgets/Canvas/ui";
@@ -15,6 +16,7 @@ const ProjectPage = () => {
   if (!project) return <>Loading...</>;
   return (
     <>
+        <Header />
       <Toolbar />
       <Canvas width={project.width} height={project.height}></Canvas>
       <Sidebar />
