@@ -23,6 +23,7 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
     const { color, typeTool: currentInstrument } = useAppSelector((state) => state.toolbar);
     const layers = useAppSelector((state) => state.layers.layers);
     const activeLayer = useAppSelector((state) => state.layers.activeLayer);
+    const zoomValue = useAppSelector((state) => state.zoom.zoomValue);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const drawing = useRef<Boolean>(false);
@@ -32,11 +33,13 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
     const endPoint = useRef<Point>({ x: 0, y: 0 });
     const virtualLayers = useRef<virtualLayerType[]>([]);
     const supportLayer = useRef<HTMLCanvasElement>();
+    const scale = zoomValue / 100;
 
 
     const renderLayers = () => {
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext("2d");
+
         if (canvas && ctx) {
             clear(ctx, canvas.width, canvas.height);
             virtualLayers.current.slice().reverse().forEach(layer => {
@@ -44,7 +47,6 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
                 if (layer.id === activeLayer?.id && supportLayer.current) {
                     const supportCtx = supportLayer.current.getContext('2d');
                     supportCtx?.drawImage(layer.canvas, 0, 0);
-                    
                     ctx.drawImage(supportLayer.current, 0, 0);
                 } else {
                     ctx.drawImage(layer.canvas, 0, 0);
@@ -77,8 +79,8 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
         event
     ) => {
         if (drawing.current) {
-            currestPoint.current.x = event.nativeEvent.offsetX;
-            currestPoint.current.y = event.nativeEvent.offsetY;
+            currestPoint.current.x = event.nativeEvent.offsetX / scale;
+            currestPoint.current.y = event.nativeEvent.offsetY / scale;
             flashingPoints.current.push({ ...currestPoint.current });
             const virtualCanvas = virtualLayers.current.find(layer => layer.id === activeLayer?.id)
             if (virtualCanvas) {
@@ -105,8 +107,8 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
         event
     ) => {
         flashingPoints.current = [];
-        startPoint.current.x = event.nativeEvent.offsetX;
-        startPoint.current.y = event.nativeEvent.offsetY;
+        startPoint.current.x = event.nativeEvent.offsetX / scale;
+        startPoint.current.y = event.nativeEvent.offsetY / scale;
         drawing.current = true;
     };
 
@@ -128,8 +130,8 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
     const mouseUpHandler: React.MouseEventHandler<HTMLCanvasElement> = (
         event
     ) => {
-        endPoint.current.x = event.nativeEvent.offsetX;
-        endPoint.current.y = event.nativeEvent.offsetY;
+        endPoint.current.x = event.nativeEvent.offsetX / scale;
+        endPoint.current.y = event.nativeEvent.offsetY / scale;
         drawing.current = false;
 
         const action = {
@@ -172,7 +174,7 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
         supportLayer.current.width = width;
         supportLayer.current.height = height;
         const supportCtx = supportLayer.current.getContext('2d');
-        if(supportCtx) {
+        if (supportCtx) {
             supportCtx.globalCompositeOperation = "destination-over";
         }
 
@@ -183,18 +185,23 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
             canvas.height = height;
             virtualLayers.current.push({ canvas, id: layer.id, opacity: layer.opacity });
         });
-    }, [canvasRef, layers]);
+    }, [layers, scale]);
 
     return (
         <Box className="canvas-container" pr={{ sm: 300 }}>
-            <canvas
-                width={width}
-                height={height}
-                ref={canvasRef}
-                onMouseDown={mouseDownHandler}
-                onMouseUp={mouseUpHandler}
-                onMouseMove={mouseMoveHandler}
-            ></canvas>
-        </Box>
+            <Box style={{ overflow: 'auto', maxHeight: 'calc(100% - 40px)', maxWidth: 'calc(100% - 340px)' }}>
+                <Box style={{ zoom: zoomValue + '%' }}>
+                    <canvas
+                        width={width}
+                        height={height}
+                        ref={canvasRef}
+                        onMouseDown={mouseDownHandler}
+                        onMouseUp={mouseUpHandler}
+                        onMouseMove={mouseMoveHandler}
+                    ></canvas>
+                </Box>
+            </Box>
+
+        </Box >
     );
 };

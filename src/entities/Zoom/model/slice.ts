@@ -9,13 +9,15 @@ export const zoomSlice = createSlice({
   initialState,
   reducers: {
     increaseZoom(state) {
-      if (state.zoomValue < 96) {
-        state.zoomValue = state.zoomValue + 5;
+      state.zoomValue = state.zoomValue + 5;
+      if (state.zoomValue > 200) {
+        state.zoomValue = 200;
       }
     },
     decreaseZoom(state) {
-      if (state.zoomValue > 4) {
-        state.zoomValue = state.zoomValue - 5;
+      state.zoomValue = state.zoomValue - 5;
+      if (state.zoomValue < 5) {
+        state.zoomValue = 5;
       }
     },
   },
