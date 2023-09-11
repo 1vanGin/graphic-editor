@@ -25,11 +25,11 @@ const ProjectPage = () => {
 
   return (
     <>
-        <Header />
+      <Header />
       <Toolbar />
-      <Canvas width={project.width} height={project.height}></Canvas>
+      <Canvas project={project}></Canvas>
       <Sidebar />
-        <BottomBar />
+      <BottomBar />
     </>
   );
 };

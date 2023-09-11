@@ -6,10 +6,12 @@ import { addAction } from "features/History/model/slice";
 import { Instrument } from "features/History/ui/types";
 import { drawEllipse, drawLine, drawRect, clear, drawBrush, eraser } from "../utils";
 import { Point, drawFunctionPropsType } from "../interfaces";
+import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
+import { updateProject } from "widgets/ProjectCardList/model/slice";
+import { IProjectCard } from "entities/ProjectCard/interfaces";
 
 type CanvasProps = {
-    width: number;
-    height: number;
+    project: IProjectCard;
 };
 
 type virtualLayerType = {
@@ -18,8 +20,10 @@ type virtualLayerType = {
     canvas: HTMLCanvasElement;
 }
 
-export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
+export const Canvas: React.FC<CanvasProps> = ({ project }) => {
+    const { uploadFile } = useFirebaseStorage();
     const dispatch = useAppDispatch();
+    const { updateProjectValues } = useFirebaseDb();
     const { color, typeTool: currentInstrument } = useAppSelector((state) => state.toolbar);
     const layers = useAppSelector((state) => state.layers.layers);
     const activeLayer = useAppSelector((state) => state.layers.activeLayer);
@@ -87,8 +91,8 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
                 const ctx = virtualCanvas.canvas.getContext('2d');
                 const supportCtx = supportLayer.current?.getContext('2d');
                 if (ctx && supportCtx) {
-                    clear(supportCtx, width, height);
-                    
+                    clear(supportCtx, project.width, project.height);
+
                     const instrumentData: drawFunctionPropsType = {
                         ctx: currentInstrument === Instrument.eraser ? ctx : supportCtx,
                         startPoint: { ...startPoint.current },
@@ -153,7 +157,7 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
             const supportCtx = supportLayer.current?.getContext('2d');
 
             if (ctx && supportCtx) {
-                clear(supportCtx, width, height);
+                clear(supportCtx, project.width, project.height);
                 const instrumentData: drawFunctionPropsType = {
                     ctx: ctx,
                     startPoint: startPoint.current,
@@ -164,6 +168,32 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
 
                 draw(currentInstrument, instrumentData);
                 requestAnimationFrame(() => renderLayers());
+
+                // Сохранение файла слоя в Firebase
+                // TODO сейчас стои не хрантся в БД
+                // virtualCanvas.canvas.toBlob((blob) => {
+                //     if (blob) {
+                //         let file = new File([blob], virtualCanvas.id + ".png", { type: "image/png" });
+                //         uploadFile(project.id, file)?.then((url: string) => {
+                //             const data = { ...project, preview: url };
+                //             dispatch(updateProject({ id: project.id, data }));
+                //             updateProjectValues(data);
+                //         });
+                //     }
+                // }, 'image/png');
+
+                // Сохранение файла preview в Firebase
+                canvasRef.current?.toBlob((blob) => {
+                    if (blob) {
+                        let file = new File([blob], "preview.png", { type: "image/png" });
+                        uploadFile(project.id, file)?.then((url: string) => {
+                            const data = { ...project, preview: url };
+                            dispatch(updateProject({ id: project.id, data }));
+                            updateProjectValues(data);
+                        });
+                    }
+                }, 'image/png');
+
             }
         }
         renderLayers();
@@ -172,8 +202,8 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
     useEffect(() => {
         // Вспомогающий стой для построения фигур
         supportLayer.current = document.createElement('canvas');
-        supportLayer.current.width = width;
-        supportLayer.current.height = height;
+        supportLayer.current.width = project.width;
+        supportLayer.current.height = project.height;
         const supportCtx = supportLayer.current.getContext('2d');
         if (supportCtx) {
             supportCtx.globalCompositeOperation = "destination-over";
@@ -182,8 +212,8 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
         virtualLayers.current = [];
         layers.forEach((layer) => {
             const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
+            canvas.width = project.width;
+            canvas.height = project.height;
             virtualLayers.current.push({ canvas, id: layer.id, opacity: layer.opacity });
         });
     }, [layers]);
@@ -193,8 +223,8 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
             <Box style={{ overflow: 'auto', maxHeight: 'calc(100% - 40px)', maxWidth: 'calc(100% - 340px)' }}>
                 <Box style={{ zoom: zoomValue + '%' }}>
                     <canvas
-                        width={width}
-                        height={height}
+                        width={project.width}
+                        height={project.height}
                         ref={canvasRef}
                         onMouseDown={mouseDownHandler}
                         onMouseUp={mouseUpHandler}

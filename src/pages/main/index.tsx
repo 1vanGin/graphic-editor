@@ -4,7 +4,7 @@ import { ProjectCardList } from "widgets/ProjectCardList/ui";
 const MainPage = () => {
   return (
     <Container>
-      <ProjectCardList />
+      <ProjectCardList />   
     </Container>
   );
 };
