@@ -12,54 +12,95 @@ type CanvasProps = {
     height: number;
 };
 
+type virtualLayerType = {
+    id: string;
+    opacity: number;
+    canvas: HTMLCanvasElement;
+}
+
 export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
     const dispatch = useAppDispatch();
-    const { color, typeTool } = useAppSelector((state) => state.toolbar);
+    const { color, typeTool: currentInstrument } = useAppSelector((state) => state.toolbar);
+    const layers = useAppSelector((state) => state.layers.layers);
+    const activeLayer = useAppSelector((state) => state.layers.activeLayer);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
     const drawing = useRef<Boolean>(false);
     const startPoint = useRef<Point>({ x: 0, y: 0 });
     const currestPoint = useRef<Point>({ x: 0, y: 0 });
     const flashingPoints = useRef<Point[]>([]);
     const endPoint = useRef<Point>({ x: 0, y: 0 });
+    const virtualLayers = useRef<virtualLayerType[]>([]);
+    const supportLayer = useRef<HTMLCanvasElement>();
+
+
+    const renderLayers = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext("2d");
+        if (canvas && ctx) {
+            clear(ctx, canvas.width, canvas.height);
+            virtualLayers.current.slice().reverse().forEach(layer => {
+                ctx.globalAlpha = layer.opacity / 100;
+                if (layer.id === activeLayer?.id && supportLayer.current) {
+                    const supportCtx = supportLayer.current.getContext('2d');
+                    supportCtx?.drawImage(layer.canvas, 0, 0);
+                    
+                    ctx.drawImage(supportLayer.current, 0, 0);
+                } else {
+                    ctx.drawImage(layer.canvas, 0, 0);
+                }
+            });
+        }
+    }
+
+    const draw = (instrument: Instrument, instrumentData: drawFunctionPropsType) => {
+        switch (instrument) {
+            case Instrument.brush:
+                drawBrush(instrumentData);
+                break;
+            case Instrument.line:
+                drawLine(instrumentData);
+                break;
+            case Instrument.eraser:
+                eraser(instrumentData);
+                break;
+            case Instrument.ellipse:
+                drawEllipse(instrumentData);
+                break;
+            case Instrument.rectangle:
+                drawRect(instrumentData);
+                break;
+        }
+    };
 
     const mouseMoveHandler: React.MouseEventHandler<HTMLCanvasElement> = (
         event
     ) => {
-        flashingPoints.current.push();
-        currestPoint.current.x = event.nativeEvent.offsetX;
-        currestPoint.current.y = event.nativeEvent.offsetY;
-        flashingPoints.current.push({...currestPoint.current});
-        if (ctxRef.current && drawing.current) {
-            clear(ctxRef.current, width, height);
-            const instrumentData: drawFunctionPropsType = {
-                ctx: ctxRef.current,
-                startPoint: startPoint.current,
-                endPoint: currestPoint.current,
-                color: color,
-                flashingPoints: flashingPoints.current,
-            };
+        if (drawing.current) {
+            currestPoint.current.x = event.nativeEvent.offsetX;
+            currestPoint.current.y = event.nativeEvent.offsetY;
+            flashingPoints.current.push({ ...currestPoint.current });
+            const virtualCanvas = virtualLayers.current.find(layer => layer.id === activeLayer?.id)
+            if (virtualCanvas) {
+                const ctx = virtualCanvas.canvas.getContext('2d');
+                const supportCtx = supportLayer.current?.getContext('2d');
+                if (ctx && supportCtx) {
+                    clear(supportCtx, width, height);
+                    const instrumentData: drawFunctionPropsType = {
+                        ctx: supportCtx,
+                        startPoint: { ...startPoint.current },
+                        endPoint: { ...currestPoint.current },
+                        color: color,
+                        flashingPoints: [...flashingPoints.current],
+                    };
 
-            switch (typeTool) {
-                case Instrument.brush:
-                    drawBrush(instrumentData);
-                    break;
-                case Instrument.line:
-                    drawLine(instrumentData);
-                    break;
-                case Instrument.eraser:
-                    eraser(instrumentData);
-                    break;
-                case Instrument.ellipse:
-                    drawEllipse(instrumentData);
-                    break;
-                case Instrument.rectangle:
-                    drawRect(instrumentData);
-                    break;
+                    draw(currentInstrument, instrumentData);
+                    requestAnimationFrame(() => renderLayers());
+                }
             }
         }
     };
+
     const mouseDownHandler: React.MouseEventHandler<HTMLCanvasElement> = (
         event
     ) => {
@@ -93,27 +134,56 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
 
         const action = {
             id: crypto.randomUUID() as string,
-            label: getInstrumentName(typeTool),
+            label: getInstrumentName(currentInstrument),
             layerId: "l1",
-            instrument: typeTool,
+            instrument: currentInstrument,
             isCancel: false,
             startPoint: { x: 0, y: 0 },
-            flashingPoints: [],
+            flashingPoints: [...flashingPoints.current],
             endPoint: { x: 0, y: 0 },
         };
         dispatch(addAction(action));
+
+        const virtualCanvas = virtualLayers.current.find(layer => layer.id === activeLayer?.id)
+        if (virtualCanvas) {
+            const ctx = virtualCanvas.canvas.getContext('2d');
+            const supportCtx = supportLayer.current?.getContext('2d');
+
+            if (ctx && supportCtx) {
+                clear(supportCtx, width, height);
+                const instrumentData: drawFunctionPropsType = {
+                    ctx: ctx,
+                    startPoint: startPoint.current,
+                    endPoint: endPoint.current,
+                    color: color,
+                    flashingPoints: flashingPoints.current,
+                };
+
+                draw(currentInstrument, instrumentData);
+                requestAnimationFrame(() => renderLayers());
+            }
+        }
+        renderLayers();
     };
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-
-        if (canvas !== null) {
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-                ctxRef.current = ctx;
-            }
+        // Вспомогающий стой для построения фигур
+        supportLayer.current = document.createElement('canvas');
+        supportLayer.current.width = width;
+        supportLayer.current.height = height;
+        const supportCtx = supportLayer.current.getContext('2d');
+        if(supportCtx) {
+            supportCtx.globalCompositeOperation = "destination-over";
         }
-    }, [canvasRef, ctxRef]);
+
+        virtualLayers.current = [];
+        layers.forEach((layer) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            virtualLayers.current.push({ canvas, id: layer.id, opacity: layer.opacity });
+        });
+    }, [canvasRef, layers]);
 
     return (
         <Box className="canvas-container" pr={{ sm: 300 }}>
