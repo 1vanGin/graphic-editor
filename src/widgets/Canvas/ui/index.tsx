@@ -88,8 +88,9 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
                 const supportCtx = supportLayer.current?.getContext('2d');
                 if (ctx && supportCtx) {
                     clear(supportCtx, width, height);
+                    
                     const instrumentData: drawFunctionPropsType = {
-                        ctx: supportCtx,
+                        ctx: currentInstrument === Instrument.eraser ? ctx : supportCtx,
                         startPoint: { ...startPoint.current },
                         endPoint: { ...currestPoint.current },
                         color: color,
@@ -185,7 +186,7 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
             canvas.height = height;
             virtualLayers.current.push({ canvas, id: layer.id, opacity: layer.opacity });
         });
-    }, [layers, scale]);
+    }, [layers]);
 
     return (
         <Box className="canvas-container" pr={{ sm: 300 }}>
@@ -201,7 +202,6 @@ export const Canvas: React.FC<CanvasProps> = ({ width, height }) => {
                     ></canvas>
                 </Box>
             </Box>
-
         </Box >
     );
 };
