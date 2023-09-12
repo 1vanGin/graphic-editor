@@ -13,7 +13,7 @@ export const ProjectCardWidget: React.FC<ProjectCardType> = ({ project }) => {
 
   useEffect(() => {
     if (project?.id && project?.name && project?.preview)
-      getImageLink(project.id, project.name);
+      getImageLink(project.id, 'preview');
   }, []);
 
   return (

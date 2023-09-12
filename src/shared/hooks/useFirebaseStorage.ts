@@ -32,22 +32,25 @@ export const useFirebaseStorage = () => {
     const storageRef = ref(storage, `/${projectId}/${file?.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        console.log("Uploaded a blob or file!", snapshot);
-      },
-      (err) => {
-        if (err) {
-          console.log("Something in storage went wrong...", err);
-        }
-      },
-      () =>
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          console.log(url);
-          setIsUploading(false);
-        }),
-    );
+    return new Promise<string>((resolve) => {
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          console.log("Uploaded a blob or file!", snapshot);
+          resolve(snapshot.metadata.fullPath);
+        },
+        (err) => {
+          if (err) {
+            console.log("Something in storage went wrong...", err);
+          }
+        },
+        () =>
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            console.log(url);
+            setIsUploading(false);
+          }),
+      );
+    });
   };
 
   const downloadFile = (projectId: string, imageName: string) => {

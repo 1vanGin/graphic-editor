@@ -43,7 +43,7 @@ export const useFirebaseDb = () => {
       height: values.height,
       width: values.width,
       createdDate: values.createdDate,
-      preview: "",
+      preview: values.preview,
       layers: {
         // for example
         // l1: {

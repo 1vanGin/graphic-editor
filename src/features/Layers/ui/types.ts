@@ -1,7 +1,7 @@
 import { TablerIconsProps } from "@tabler/icons-react";
 
 export interface ILayer {
-  id: number;
+  id: string;
   label: string;
   url: string;
   isVisible: boolean;
