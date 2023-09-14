@@ -53,7 +53,7 @@ export function Layers() {
   const active = useAppSelector((state) => state.layers.activeLayer);
   const projectId = useAppSelector((state) => state.projects.openProjectId)
 
-  const { updateProjectLayers, deleteProjectLayers } = useFirebaseDb();
+  const { updateProjectLayer, deleteProjectLayer } = useFirebaseDb();
 
   const handleEditableTextChange = (layer: ILayer, event: React.ChangeEvent<HTMLInputElement>) => {
     const newLabel = event.currentTarget.value
@@ -65,7 +65,7 @@ export function Layers() {
       })
     );
     layerProps.label = newLabel
-    updateProjectLayers({
+    updateProjectLayer({
       projectId,
       layer: layerProps
     })
@@ -75,7 +75,7 @@ export function Layers() {
     const layerProps = { ...layer }
     layerProps.isVisible = !layer.isVisible
     dispatch(toggleVisibility(layerProps))
-    updateProjectLayers({
+    updateProjectLayer({
       projectId,
       layer: layerProps
     })
@@ -83,7 +83,7 @@ export function Layers() {
 
   const deleteLayerHandler = (layer: ILayer) => {
     dispatch(deleteLayer(layer.id))
-    deleteProjectLayers({
+    deleteProjectLayer({
       projectId,
       layer
     })
@@ -101,7 +101,7 @@ export function Layers() {
     };
 
     dispatch(addLayer(newLayer));
-    updateProjectLayers({
+    updateProjectLayer({
       projectId,
       layer: newLayer
     })
