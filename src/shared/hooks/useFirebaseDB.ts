@@ -107,8 +107,8 @@ export const useFirebaseDb = () => {
     updateProjectName,
     deleteProjectFromDB,
     fetchProjects,
-    updateProjectLayers,
-    deleteProjectLayers,
+    updateProjectLayer,
+    deleteProjectLayer,
     loading,
   };
 };
