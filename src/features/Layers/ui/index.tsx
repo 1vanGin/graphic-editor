@@ -93,7 +93,6 @@ export function Layers() {
     const generatedId = Number(new Date());
     const newLayer: ILayer = {
       id: String(generatedId),
-      icon: "IconLayersSubtract",
       label: "Новый слой",
       isVisible: true,
       opacity: 100,

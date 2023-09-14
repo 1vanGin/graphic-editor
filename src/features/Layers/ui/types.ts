@@ -6,6 +6,4 @@ export interface ILayer {
   isVisible: boolean;
   sortOrder: number;
   opacity: number;
-  icon?: string
-  // body: [];
 }
