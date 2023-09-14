@@ -1,7 +1,7 @@
 import { Box, Button, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { FormValues } from "../interfaces";
-import { IProjectCard } from "entities/ProjectCard";
+import { IProjectCard } from "entities/ProjectCard/interfaces";
 
 type EditProjectFormType = {
     project: IProjectCard;

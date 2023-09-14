@@ -37,7 +37,6 @@ export const useFirebaseStorage = () => {
         "state_changed",
         (snapshot) => {
           console.log("Uploaded a blob or file!", snapshot);
-          resolve(snapshot.metadata.fullPath);
         },
         (err) => {
           if (err) {
@@ -46,7 +45,7 @@ export const useFirebaseStorage = () => {
         },
         () =>
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            console.log(url);
+            resolve(url);
             setIsUploading(false);
           }),
       );

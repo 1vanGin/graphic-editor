@@ -1,10 +1,15 @@
 import { Card } from "@mantine/core";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
+import { useFirebaseDb } from "shared/hooks";
 
 export const Header = () => {
   const navigate = useNavigate();
-
+  const { fetchProjects } = useFirebaseDb();
+  const toAllProjectHandler = () => {
+    navigate("/")
+    fetchProjects()
+  }
   return (
     <div className="header">
       <div className="btns">
@@ -30,7 +35,7 @@ export const Header = () => {
         </div>
         <span
           className="btn-text btn-text-project"
-          onClick={() => navigate("/")}
+          onClick={toAllProjectHandler}
         >
           Все проекты
         </span>

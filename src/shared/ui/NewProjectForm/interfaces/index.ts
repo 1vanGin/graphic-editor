@@ -17,3 +17,10 @@ export interface ProjectProp {
     [key: string]: ILayer;
   };
 }
+
+
+
+export interface IUpdateProjectLayers {
+  projectId: string
+  layer: ILayer
+}
