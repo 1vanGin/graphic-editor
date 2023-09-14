@@ -17,11 +17,12 @@ import {
   addLayer,
   deleteLayer,
   setActiveLayer,
-  toggleVisability,
+  toggleVisibility,
   changeLayerLabel,
 } from "../model/slice";
 import { ILayer } from "./types";
 import { EditableText } from "shared/EditableText";
+import { useFirebaseDb } from "shared/hooks";
 
 const useStyles = createStyles((theme) => ({
   layer: {
@@ -50,30 +51,61 @@ export function Layers() {
   const dispatch = useAppDispatch();
   const layers = useAppSelector((state) => state.layers.layers);
   const active = useAppSelector((state) => state.layers.activeLayer);
+  const projectId = useAppSelector((state) => state.projects.openProjectId)
 
-  const handleEditableTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const { updateProjectLayers, deleteProjectLayers } = useFirebaseDb();
+
+  const handleEditableTextChange = (layer: ILayer, event: React.ChangeEvent<HTMLInputElement>) => {
+    const newLabel = event.currentTarget.value
+    const layerProps = { ...layer }
     dispatch(
       changeLayerLabel({
-        id: +event.currentTarget.id,
-        newLabel: event.currentTarget.value,
+        id: event.currentTarget.id,
+        newLabel,
       })
     );
+    layerProps.label = newLabel
+    updateProjectLayers({
+      projectId,
+      layer: layerProps
+    })
   };
+
+  const toggleVisibilityHandler = (layer: ILayer) => {
+    const layerProps = { ...layer }
+    layerProps.isVisible = !layer.isVisible
+    dispatch(toggleVisibility(layerProps))
+    updateProjectLayers({
+      projectId,
+      layer: layerProps
+    })
+  }
+
+  const deleteLayerHandler = (layer: ILayer) => {
+    dispatch(deleteLayer(layer.id))
+    deleteProjectLayers({
+      projectId,
+      layer
+    })
+  }
 
   const addHandler = () => {
     const generatedId = Number(new Date());
     const newLayer: ILayer = {
-      id: generatedId,
-      icon: IconLayersSubtract,
+      id: String(generatedId),
+      icon: "IconLayersSubtract",
       label: "Новый слой",
       isVisible: true,
       opacity: 100,
       url: "",
       sortOrder: 0,
-      // body: [],
     };
 
     dispatch(addLayer(newLayer));
+    updateProjectLayers({
+      projectId,
+      layer: newLayer
+    })
     dispatch(setActiveLayer(newLayer));
   };
 
@@ -91,16 +123,16 @@ export function Layers() {
       onClick={() => dispatch(setActiveLayer(layer))}
     >
       <Group>
-        <layer.icon size={20} stroke={1.5} />
+        <IconLayersSubtract size={20} stroke={1.5} />
         <EditableText
           id={`${layer.id}`}
           text={layer.label}
-          handleChange={handleEditableTextChange}
+          handleChange={(event) => handleEditableTextChange(layer, event)}
         />
       </Group>
       <div>
         <Tooltip label="Видимость слоя" withArrow position="bottom">
-          <UnstyledButton mr="xs" onClick={() => dispatch(toggleVisability(layer))}>
+          <UnstyledButton mr="xs" onClick={() => toggleVisibilityHandler(layer)}>
             {layer.isVisible ? (
               <IconEye size={20} stroke={1.5} />
             ) : (
@@ -109,7 +141,7 @@ export function Layers() {
           </UnstyledButton>
         </Tooltip>
         <Tooltip label="Удалить слой" withArrow position="bottom">
-          <UnstyledButton onClick={() => dispatch(deleteLayer(layer.id))}>
+          <UnstyledButton onClick={() => deleteLayerHandler(layer)}>
             <IconTrash size={20} stroke={1.5} />
           </UnstyledButton>
         </Tooltip>

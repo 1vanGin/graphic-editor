@@ -1,4 +1,3 @@
-import { TablerIconsProps } from "@tabler/icons-react";
 
 export interface ILayer {
   id: string;
@@ -7,6 +6,6 @@ export interface ILayer {
   isVisible: boolean;
   sortOrder: number;
   opacity: number;
-  icon?: (props: TablerIconsProps) => JSX.Element;
+  icon?: string
   // body: [];
 }

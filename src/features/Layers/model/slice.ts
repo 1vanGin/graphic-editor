@@ -1,47 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { LayersState } from "./types";
-import { IconLayersSubtract } from "@tabler/icons-react";
 import { ILayer } from "../ui/types";
+import { setProjectLayersThunk } from "./layersThunk";
 
 const initialState: LayersState = {
-  layers: [
-    {
-      id: "1",
-      label: "Слой 1",
-      icon: IconLayersSubtract,
-      isVisible: true,
-      opacity: 100,
-      sortOrder: 0,
-      url: "",
-    },
-    {
-      id: "2",
-      label: "Слой 2",
-      icon: IconLayersSubtract,
-      isVisible: true,
-      opacity: 50,
-      sortOrder: 1,
-      url: "",
-    },
-    {
-      id: "3",
-      label: "Слой 3",
-      icon: IconLayersSubtract,
-      isVisible: false,
-      opacity: 100,
-      sortOrder: 1,
-      url: "",
-    },
-  ],
-  activeLayer: {
-    id: "1",
-    label: "Слой 1",
-    icon: IconLayersSubtract,
-    isVisible: true,
-    opacity: 100,
-    sortOrder: 0,
-    url: "",
-  },
+  layers: [],
+  activeLayer: null,
 };
 
 export const layersSlice = createSlice({
@@ -58,9 +22,9 @@ export const layersSlice = createSlice({
       const filteredLayers = state.layers.filter((item) => item.id !== action.payload);
       state.layers = filteredLayers;
     },
-    toggleVisability(state, action: PayloadAction<ILayer>) {
+    toggleVisibility(state, action: PayloadAction<ILayer>) {
       const findIndex = state.layers.findIndex((item) => item.id == action.payload.id);
-      state.layers[findIndex].isVisible = !action.payload.isVisible;
+      state.layers[findIndex].isVisible = action.payload.isVisible;
     },
     changeLayerLabel(state, action: PayloadAction<{ id: string; newLabel: string }>) {
       state.layers.map((item) => {
@@ -70,7 +34,12 @@ export const layersSlice = createSlice({
       });
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(setProjectLayersThunk, (state, action) => {
+      state.layers = action.payload;
+    });
+  },
 });
 
-export const { addLayer, deleteLayer, toggleVisability, setActiveLayer, changeLayerLabel } =
+export const { addLayer, deleteLayer, toggleVisibility, setActiveLayer, changeLayerLabel } =
   layersSlice.actions;

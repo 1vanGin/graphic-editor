@@ -7,9 +7,10 @@ import {
   RenameItemMenuComponent,
 } from "entities/ContextMenu";
 import { useNavigate } from "react-router-dom";
-import { deleteProject } from "widgets/ProjectCardList/model/slice.ts";
+import { deleteProject, setOpenProjectId } from "widgets/ProjectCardList/model/slice.ts";
 import { useAppDispatch } from "app/store/hooks.ts";
 import { useFirebaseDb } from "shared/hooks";
+import { setProjectLayers } from "features/Layers/model/layersThunk";
 
 interface ContextMenuFeatureProps {
   projectId: string;
@@ -20,13 +21,19 @@ export const ContextMenuFeature = ({ projectId }: ContextMenuFeatureProps) => {
   const dispatch = useAppDispatch();
   const { deleteProjectFromDB } = useFirebaseDb();
 
-  const downloadHandler = () => {};
-  const renameHandler = () => {};
+  const downloadHandler = () => { };
+  const renameHandler = () => { };
 
   const deleteProjectHandle = () => {
     dispatch(deleteProject(projectId));
     deleteProjectFromDB(projectId);
   };
+
+  const openProjectHandler = () => {
+    navigate(`/projects/${projectId}`)
+    dispatch(setOpenProjectId(projectId))
+    dispatch(setProjectLayers(projectId))
+  }
 
   return (
     <Menu withinPortal position="bottom-end" shadow="sm">
@@ -37,7 +44,7 @@ export const ContextMenuFeature = ({ projectId }: ContextMenuFeatureProps) => {
       </Menu.Target>
       <Menu.Dropdown>
         <OpenItemMenuComponent
-          onClick={() => navigate(`/projects/${projectId}`)}
+          onClick={openProjectHandler}
         />
         <DownloadItemMenuComponent onClick={downloadHandler} />
         <RenameItemMenuComponent onClick={renameHandler} />

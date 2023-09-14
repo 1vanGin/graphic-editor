@@ -2,9 +2,10 @@ import { onValue, ref, remove, set, update } from "@firebase/database";
 import { firebaseDB } from "app/firebase";
 import { useState } from "react";
 import { Database } from "../enums";
-import { ProjectProp } from "shared/ui/NewProjectForm/interfaces";
+import { IUpdateProjectLayers, ProjectProp } from "shared/ui/NewProjectForm/interfaces";
 import { useAppDispatch } from "app/store/hooks.ts";
 import { setProjectsFromServer } from "widgets/ProjectCardList/model/slice.ts";
+import { ILayer } from "features/Layers/ui/types";
 
 export const useFirebaseDb = () => {
   const dbRef = ref(firebaseDB, Database.projects);
@@ -36,32 +37,11 @@ export const useFirebaseDb = () => {
       });
   };
 
-  const updateProjectValues = (values: ProjectProp) => {
-    const projectKeys = {
-      id: values.id,
-      name: values.name,
-      height: values.height,
-      width: values.width,
-      createdDate: values.createdDate,
-      preview: values.preview,
-      layers: {
-        // for example
-        // l1: {
-        //   id: "l1",
-        //   label: "",
-        //   url: "",
-        //   isVisible: false,
-        //   sortOrder: 0,
-        //   opacity: 0
-        // },
-      },
-    };
-    // const newPostKey = push(child(ref(firebaseDB), "projects")).key;
-
+  const updateProjectName = async (values: ProjectProp) => {
     const updates: {
-      [key: string]: ProjectProp;
+      [key: string]: string;
     } = {};
-    updates[`/${Database.projects}/` + values.id] = projectKeys;
+    updates[`/${Database.projects}/${values.id}/name`] = values.name;
     return update(ref(firebaseDB), updates)
       .then(() => {
         console.log("Project was updated");
@@ -70,6 +50,34 @@ export const useFirebaseDb = () => {
         console.log("Something in database went wrong...", error);
       });
   };
+
+
+  const updateProjectLayers = async ({ projectId, layer }: IUpdateProjectLayers) => {
+    const updates: {
+      [key: string]: ILayer;
+    } = {};
+    updates[layer.id] = layer;
+    return update(ref(firebaseDB, `/${Database.projects}/${projectId}/layers/`), updates)
+      .then(() => {
+        console.log("Layer was updated");
+      })
+      .catch((error) => {
+        console.log("Something in database went wrong...", error);
+      });
+  };
+
+
+  const deleteProjectLayers = async ({ projectId, layer }: IUpdateProjectLayers) => {
+    return remove(ref(firebaseDB, `/${Database.projects}/${projectId}/layers/${layer.id}`))
+      .then(() => {
+        console.log("Layer was deleted");
+      })
+      .catch((error) => {
+        console.log("Something in database went wrong...", error);
+      });
+  };
+
+
 
   const fetchProjects = () => {
     setLoading(true);
@@ -96,9 +104,11 @@ export const useFirebaseDb = () => {
 
   return {
     addProject,
-    updateProjectValues,
+    updateProjectName,
     deleteProjectFromDB,
     fetchProjects,
+    updateProjectLayers,
+    deleteProjectLayers,
     loading,
   };
 };
