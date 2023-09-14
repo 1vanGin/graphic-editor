@@ -52,7 +52,7 @@ export const useFirebaseDb = () => {
   };
 
 
-  const updateProjectLayers = async ({ projectId, layer }: IUpdateProjectLayers) => {
+  const updateProjectLayer = async ({ projectId, layer }: IUpdateProjectLayers) => {
     const updates: {
       [key: string]: ILayer;
     } = {};
@@ -67,7 +67,7 @@ export const useFirebaseDb = () => {
   };
 
 
-  const deleteProjectLayers = async ({ projectId, layer }: IUpdateProjectLayers) => {
+  const deleteProjectLayer = async ({ projectId, layer }: IUpdateProjectLayers) => {
     return remove(ref(firebaseDB, `/${Database.projects}/${projectId}/layers/${layer.id}`))
       .then(() => {
         console.log("Layer was deleted");
