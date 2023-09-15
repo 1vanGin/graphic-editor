@@ -23,7 +23,7 @@ type virtualLayerType = {
 export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     const { uploadFile } = useFirebaseStorage();
     const dispatch = useAppDispatch();
-    const { updateProjectValues } = useFirebaseDb();
+    const { updateProjectName } = useFirebaseDb();
     const { color, typeTool: currentInstrument } = useAppSelector((state) => state.toolbar);
     const layers = useAppSelector((state) => state.layers.layers);
     const activeLayer = useAppSelector((state) => state.layers.activeLayer);
@@ -177,7 +177,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
                 //         uploadFile(project.id, file)?.then((url: string) => {
                 //             const data = { ...project, preview: url };
                 //             dispatch(updateProject({ id: project.id, data }));
-                //             updateProjectValues(data);
+                //             updateProjectName(data);
                 //         });
                 //     }
                 // }, 'image/png');
@@ -189,7 +189,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
                         uploadFile(project.id, file)?.then((url: string) => {
                             const data = { ...project, preview: url };
                             dispatch(updateProject({ id: project.id, data }));
-                            updateProjectValues(data);
+                            updateProjectName(data);
                         });
                     }
                 }, 'image/png');

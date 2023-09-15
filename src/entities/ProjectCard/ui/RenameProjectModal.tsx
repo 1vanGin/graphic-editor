@@ -13,12 +13,12 @@ interface RenameProjectModalProps {
 
 export const RenameProjectModal = ({ project }: RenameProjectModalProps) => {
   const [opened, setOpened] = useState(false);
-  const { updateProjectValues } = useFirebaseDb();
+  const { updateProjectName } = useFirebaseDb();
   const dispatch = useAppDispatch();
 
   const onSaveHandler = (values: IProjectCard) => {
     dispatch(updateProject({ id: values.id, data: values }));
-    updateProjectValues(values).finally(() => {
+    updateProjectName(values).finally(() => {
       setOpened(false);
     });
   };

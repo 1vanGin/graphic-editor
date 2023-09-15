@@ -9,9 +9,13 @@ import { firebaseStorage } from "../../app/firebase";
 import { useState } from "react";
 import { saveBlob } from "../helpers";
 import { getStorage } from "firebase/storage";
+import { useFirebaseDb } from ".";
+import { ILayer } from "features/Layers/ui/types";
 
 export const useFirebaseStorage = () => {
   const storage = getStorage();
+  const { updateProjectLayer } = useFirebaseDb();
+
   const [isUploading, setIsUploading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [imageLink, setImageLink] = useState("");
@@ -37,7 +41,6 @@ export const useFirebaseStorage = () => {
         "state_changed",
         (snapshot) => {
           console.log("Uploaded a blob or file!", snapshot);
-          resolve(snapshot.metadata.fullPath);
         },
         (err) => {
           if (err) {
@@ -46,11 +49,41 @@ export const useFirebaseStorage = () => {
         },
         () =>
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            console.log(url);
+            resolve(url);
             setIsUploading(false);
           }),
       );
     });
+  };
+
+  const uploadLayerFile = async (projectId: string, layer: ILayer, file: File) => {
+    if (!file) return;
+    setIsUploading(true);
+    const storageRef = ref(storage, `/${projectId}/${layer.id}/${file?.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    const layerUrl = await new Promise<string>((resolve) => {
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          console.log("Uploaded layer file!", snapshot);
+        },
+        (err) => {
+          if (err) {
+            console.log("Something in storage went wrong...", err);
+          }
+        },
+        () =>
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            resolve(url);
+            setIsUploading(false);
+          }),
+      );
+      const layerProps = { ...layer }
+      layerProps.url = layerUrl
+      updateProjectLayer({ projectId, layer: layerProps })
+    });
+
   };
 
   const downloadFile = (projectId: string, imageName: string) => {
@@ -81,6 +114,7 @@ export const useFirebaseStorage = () => {
 
   return {
     uploadFile,
+    uploadLayerFile,
     isUploading,
     downloadFile,
     isDownloading,
