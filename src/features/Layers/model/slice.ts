@@ -33,6 +33,13 @@ export const layersSlice = createSlice({
         }
       });
     },
+    changeLayerOpacity(state, action: PayloadAction<{ id: string; opacity: number }>) {
+      state.layers.map((item) => {
+        if (action.payload.id === item.id) {
+          return (item.opacity = action.payload.opacity);
+        }
+      });
+    },
     changeLayerImageUrl(state, action: PayloadAction<{ id: string; url: string }>) {
       state.layers.map((item) => {
         if (action.payload.id === item.id) {
@@ -48,5 +55,5 @@ export const layersSlice = createSlice({
   },
 });
 
-export const { addLayer, deleteLayer, toggleVisibility, setActiveLayer, changeLayerLabel, changeLayerImageUrl } =
+export const { addLayer, deleteLayer, toggleVisibility, setActiveLayer, changeLayerLabel, changeLayerImageUrl, changeLayerOpacity } =
   layersSlice.actions;

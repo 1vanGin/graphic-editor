@@ -7,9 +7,10 @@ import { Instrument } from "features/History/ui/types";
 import { drawEllipse, drawLine, drawRect, clear, drawBrush, eraser } from "../utils";
 import { Point, drawFunctionPropsType } from "../interfaces";
 import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
-import { updateProject } from "widgets/ProjectCardList/model/slice";
 import { IProjectCard } from "entities/ProjectCard/interfaces";
 import { changeLayerImageUrl } from "features/Layers/model/slice";
+import { updateProject } from "widgets/ProjectCardList/model/slice";
+import { ILayer } from "features/Layers/ui/types";
 
 type CanvasProps = {
     project: IProjectCard;
@@ -19,12 +20,14 @@ type virtualLayerType = {
     id: string;
     opacity: number;
     canvas: HTMLCanvasElement;
+    sort: number;
+    isVisible: boolean;
 }
 
 export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     const { uploadFile } = useFirebaseStorage();
     const dispatch = useAppDispatch();
-    const { updateProjectName, updateProjectLayerImageUrl } = useFirebaseDb();
+    const { updateProjectPreview, updateProjectLayerImageUrl } = useFirebaseDb();
     const { color, typeTool: currentInstrument } = useAppSelector((state) => state.toolbar);
     const layers = useAppSelector((state) => state.layers.layers);
     const activeLayer = useAppSelector((state) => state.layers.activeLayer);
@@ -39,22 +42,31 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     const virtualLayers = useRef<virtualLayerType[]>([]);
     const supportLayer = useRef<HTMLCanvasElement>();
     const scale = zoomValue / 100;
+    const initialProjectId = useRef<string>();
+    const projectId = useAppSelector((state) => state.projects.openProjectId)
 
 
     const renderLayers = () => {
+        console.log('render');
+
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext("2d");
 
         if (canvas && ctx) {
             clear(ctx, canvas.width, canvas.height);
-            virtualLayers.current.slice().reverse().forEach(layer => {
-                ctx.globalAlpha = layer.opacity / 100;
-                if (layer.id === activeLayer?.id && supportLayer.current) {
-                    const supportCtx = supportLayer.current.getContext('2d');
-                    supportCtx?.drawImage(layer.canvas, 0, 0);
-                    ctx.drawImage(supportLayer.current, 0, 0);
-                } else {
-                    ctx.drawImage(layer.canvas, 0, 0);
+            virtualLayers.current.slice().sort((a, b) => a.sort - b.sort).forEach(layer => {
+                if (layer.isVisible) {
+                    ctx.globalAlpha = layer.opacity / 100;
+                    if (layer.id === activeLayer?.id && supportLayer.current) {
+                        const supportCtx = supportLayer.current.getContext('2d');
+                        if (supportCtx) {
+                            supportCtx.drawImage(layer.canvas, 0, 0);
+                            ctx.drawImage(supportLayer.current, 0, 0);
+                        }
+
+                    } else {
+                        ctx.drawImage(layer.canvas, 0, 0);
+                    }
                 }
             });
         }
@@ -158,7 +170,6 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
             const supportCtx = supportLayer.current?.getContext('2d');
 
             if (ctx && supportCtx) {
-                clear(supportCtx, project.width, project.height);
                 const instrumentData: drawFunctionPropsType = {
                     ctx: ctx,
                     startPoint: startPoint.current,
@@ -176,7 +187,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
                         let file = new File([blob], virtualCanvas.id + ".png", { type: "image/png" });
                         uploadFile(project.id, file)?.then((url: string) => {
                             dispatch(changeLayerImageUrl({ id: project.id, url }));
-                            updateProjectLayerImageUrl({ projectId: project.id, layerId: virtualCanvas.id, url: url});
+                            updateProjectLayerImageUrl({ projectId: project.id, layerId: virtualCanvas.id, url: url });
                         });
                     }
                 }, 'image/png');
@@ -186,36 +197,82 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
                     if (blob) {
                         let file = new File([blob], "preview.png", { type: "image/png" });
                         uploadFile(project.id, file)?.then((url: string) => {
-                            const data = { ...project, preview: url };
+                            const data = {
+                                ...project, preview: url,
+                                layers: layers.reduce((acc: { [key: string]: ILayer }, item) => {
+                                    acc[item.id] = item;
+                                    return acc;
+                                }, {})
+                            };
                             dispatch(updateProject({ id: project.id, data }));
-                            updateProjectName(data);
+                            updateProjectPreview(project.id, url);
                         });
                     }
                 }, 'image/png');
 
             }
         }
-        renderLayers();
+        requestAnimationFrame(() => renderLayers());
     };
 
     useEffect(() => {
-        // Вспомогающий стой для построения фигур
-        supportLayer.current = document.createElement('canvas');
-        supportLayer.current.width = project.width;
-        supportLayer.current.height = project.height;
-        const supportCtx = supportLayer.current.getContext('2d');
+        const supportCtx = supportLayer.current?.getContext('2d');
         if (supportCtx) {
-            supportCtx.globalCompositeOperation = "destination-over";
+            clear(supportCtx, project.width, project.height);
+        }
+    }, [activeLayer]);
+
+    useEffect(() => {
+
+        if (initialProjectId.current !== projectId) {
+            initialProjectId.current = projectId;
+            virtualLayers.current.forEach(item => item.canvas.remove());
+            virtualLayers.current = [];
         }
 
-        virtualLayers.current = [];
-        layers.forEach((layer) => {
-            const canvas = document.createElement('canvas');
-            canvas.width = project.width;
-            canvas.height = project.height;
-            virtualLayers.current.push({ canvas, id: layer.id, opacity: layer.opacity });
+        // Вспомогающий слой для построения фигур
+        if (!supportLayer.current) {
+            supportLayer.current = document.createElement('canvas');
+            supportLayer.current.width = project.width;
+            supportLayer.current.height = project.height;
+            const supportCtx = supportLayer.current.getContext('2d');
+            if (supportCtx) {
+                supportCtx.globalCompositeOperation = "destination-over";
+            }
+            document.body.append(supportLayer.current);
+        }
+        let sort = 0;
+        const promises = layers.map(async (layer) => {
+            const index = virtualLayers.current.findIndex(item => item.id === layer.id);
+            // Сортировка слоёв, если не задан sortOrder
+            sort = layer.sortOrder || sort + 1;
+            if (index !== -1) {
+                virtualLayers.current[index].opacity = layer.opacity;
+                virtualLayers.current[index].sort = sort;
+                virtualLayers.current[index].isVisible = layer.isVisible;
+            } else {
+                const canvas = document.createElement('canvas');
+                canvas.width = project.width;
+                canvas.height = project.height;
+                document.body.append(canvas);
+                virtualLayers.current.push({ canvas, id: layer.id, opacity: layer.opacity, sort, isVisible: layer.isVisible });
+
+                // Отрисовка первоначальных состояний слоёв
+                const layerCtx = canvas.getContext('2d');
+                let img = new Image();
+                if (layer.url) {
+                    await new Promise(resolve => {
+                        img.onload = resolve;
+                        img.crossOrigin = "anonymous";
+                        img.src = layer.url
+                    });
+                    layerCtx?.drawImage(img, 0, 0);
+                }
+            }
         });
-    }, [layers]);
+        // Ререндер после загрузки всех картинок
+        Promise.all(promises).then(() => requestAnimationFrame(() => renderLayers()));
+    }, [layers, projectId]);
 
     return (
         <Box className="canvas-container" pr={{ sm: 300 }}>

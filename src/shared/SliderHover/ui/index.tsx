@@ -1,14 +1,18 @@
 import { Slider } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 
-export function SliderHover() {
+type SliderHoverProps = {
+  value: number;
+  onChange: (value: number) => void;
+}
+
+export function SliderHover({ value, onChange }: SliderHoverProps) {
   const { hovered, ref } = useHover();
 
   return (
     <Slider
-      defaultValue={40}
-      min={10}
-      max={90}
+      min={0}
+      max={100}
       ref={ref}
       label={null}
       styles={{
@@ -21,6 +25,8 @@ export function SliderHover() {
           opacity: 1,
         },
       }}
+      value={value}
+      onChange={onChange}
     />
   );
 }

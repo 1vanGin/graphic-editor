@@ -23,7 +23,7 @@ export const useFirebaseDb = () => {
       width: payload.width,
       createdDate: payload.createdDate,
       preview: "",
-      layers: {},
+      layers: payload.layers,
     }).then(() => {
       setLoading(false);
     });
@@ -42,6 +42,20 @@ export const useFirebaseDb = () => {
       [key: string]: string;
     } = {};
     updates[`/${Database.projects}/${values.id}/name`] = values.name;
+    return update(ref(firebaseDB), updates)
+      .then(() => {
+        console.log("Project was updated");
+      })
+      .catch((error) => {
+        console.log("Something in database went wrong...", error);
+      });
+  };
+
+  const updateProjectPreview = async (projectId: string, preview: string) => {
+    const updates: {
+      [key: string]: string;
+    } = {};
+    updates[`/${Database.projects}/${projectId}/preview`] = preview;
     return update(ref(firebaseDB), updates)
       .then(() => {
         console.log("Project was updated");
@@ -124,6 +138,7 @@ export const useFirebaseDb = () => {
     updateProjectLayer,
     updateProjectLayerImageUrl,
     deleteProjectLayer,
+    updateProjectPreview,
     loading,
   };
 };
