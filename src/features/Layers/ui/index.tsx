@@ -90,9 +90,8 @@ export function Layers() {
   }
 
   const addHandler = () => {
-    const generatedId = Number(new Date());
     const newLayer: ILayer = {
-      id: String(generatedId),
+      id: crypto.randomUUID(),
       label: "Новый слой",
       isVisible: true,
       opacity: 100,

@@ -9,6 +9,7 @@ import { Point, drawFunctionPropsType } from "../interfaces";
 import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
 import { updateProject } from "widgets/ProjectCardList/model/slice";
 import { IProjectCard } from "entities/ProjectCard/interfaces";
+import { changeLayerImageUrl } from "features/Layers/model/slice";
 
 type CanvasProps = {
     project: IProjectCard;
@@ -23,7 +24,7 @@ type virtualLayerType = {
 export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     const { uploadFile } = useFirebaseStorage();
     const dispatch = useAppDispatch();
-    const { updateProjectName } = useFirebaseDb();
+    const { updateProjectName, updateProjectLayerImageUrl } = useFirebaseDb();
     const { color, typeTool: currentInstrument } = useAppSelector((state) => state.toolbar);
     const layers = useAppSelector((state) => state.layers.layers);
     const activeLayer = useAppSelector((state) => state.layers.activeLayer);
@@ -170,17 +171,15 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
                 requestAnimationFrame(() => renderLayers());
 
                 // Сохранение файла слоя в Firebase
-                // TODO сейчас стои не хрантся в БД
-                // virtualCanvas.canvas.toBlob((blob) => {
-                //     if (blob) {
-                //         let file = new File([blob], virtualCanvas.id + ".png", { type: "image/png" });
-                //         uploadFile(project.id, file)?.then((url: string) => {
-                //             const data = { ...project, preview: url };
-                //             dispatch(updateProject({ id: project.id, data }));
-                //             updateProjectName(data);
-                //         });
-                //     }
-                // }, 'image/png');
+                virtualCanvas.canvas.toBlob((blob) => {
+                    if (blob) {
+                        let file = new File([blob], virtualCanvas.id + ".png", { type: "image/png" });
+                        uploadFile(project.id, file)?.then((url: string) => {
+                            dispatch(changeLayerImageUrl({ id: project.id, url }));
+                            updateProjectLayerImageUrl({ projectId: project.id, layerId: virtualCanvas.id, url: url});
+                        });
+                    }
+                }, 'image/png');
 
                 // Сохранение файла preview в Firebase
                 canvasRef.current?.toBlob((blob) => {
