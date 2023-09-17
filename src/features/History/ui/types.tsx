@@ -17,4 +17,5 @@ export interface IHistoryAction {
     flashingPoints: Point[];
     endPoint: Point;
     layerId: string;
+    color: string;
 }
