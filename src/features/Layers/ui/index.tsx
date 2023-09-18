@@ -19,10 +19,12 @@ import {
   setActiveLayer,
   toggleVisibility,
   changeLayerLabel,
+  changeLayerOpacity,
 } from "../model/slice";
 import { ILayer } from "./types";
 import { EditableText } from "shared/EditableText";
 import { useFirebaseDb } from "shared/hooks";
+import { useState } from "react";
 
 const useStyles = createStyles((theme) => ({
   layer: {
@@ -51,9 +53,9 @@ export function Layers() {
   const dispatch = useAppDispatch();
   const layers = useAppSelector((state) => state.layers.layers);
   const active = useAppSelector((state) => state.layers.activeLayer);
-  const projectId = useAppSelector((state) => state.projects.openProjectId)
-
+  const projectId = useAppSelector((state) => state.projects.openProjectId);
   const { updateProjectLayer, deleteProjectLayer } = useFirebaseDb();
+
 
   const handleEditableTextChange = (layer: ILayer, event: React.ChangeEvent<HTMLInputElement>) => {
     const newLabel = event.currentTarget.value
@@ -68,7 +70,7 @@ export function Layers() {
     updateProjectLayer({
       projectId,
       layer: layerProps
-    })
+    });
   };
 
   const toggleVisibilityHandler = (layer: ILayer) => {
@@ -78,21 +80,35 @@ export function Layers() {
     updateProjectLayer({
       projectId,
       layer: layerProps
-    })
+    });
   }
 
   const deleteLayerHandler = (layer: ILayer) => {
-    dispatch(deleteLayer(layer.id))
+    dispatch(deleteLayer(layer.id));
     deleteProjectLayer({
       projectId,
       layer
-    })
+    });
+  }
+
+  const onChangeOpacityLayerHandler = (value: number) => {
+    if (active?.id) {
+      dispatch(setActiveLayer({...active, opacity: value}));
+    
+      const layer = layers.find(item => item.id === active.id);
+      if (layer) {
+        dispatch(changeLayerOpacity({ id: layer.id, opacity: value }));
+        updateProjectLayer({
+          projectId,
+          layer: { ...layer, opacity: value }
+        });
+      }
+    }
   }
 
   const addHandler = () => {
-    const generatedId = Number(new Date());
     const newLayer: ILayer = {
-      id: String(generatedId),
+      id: crypto.randomUUID(),
       label: "Новый слой",
       isVisible: true,
       opacity: 100,
@@ -119,7 +135,9 @@ export function Layers() {
       className={cx(classes.layer, {
         [classes.layerActive]: layer.id === active?.id,
       })}
-      onClick={() => dispatch(setActiveLayer(layer))}
+      onClick={() => {
+        dispatch(setActiveLayer(layer));
+      }}
     >
       <Group>
         <IconLayersSubtract size={20} stroke={1.5} />
@@ -131,7 +149,7 @@ export function Layers() {
       </Group>
       <div>
         <Tooltip label="Видимость слоя" withArrow position="bottom">
-          <UnstyledButton mr="xs" onClick={() => toggleVisibilityHandler(layer)}>
+          <UnstyledButton mr="xs" onClick={(e) => { toggleVisibilityHandler(layer); e.stopPropagation(); }}>
             {layer.isVisible ? (
               <IconEye size={20} stroke={1.5} />
             ) : (
@@ -162,7 +180,7 @@ export function Layers() {
       </Group>
       {active && (
         <Stack my="sm" pl="md" pr="xl">
-          <SliderHover />
+          <SliderHover value={active.opacity} onChange={onChangeOpacityLayerHandler} />
         </Stack>
       )}
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>

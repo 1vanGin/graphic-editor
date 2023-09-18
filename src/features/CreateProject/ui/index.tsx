@@ -16,6 +16,7 @@ export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
   const dispatch = useAppDispatch();
 
   const onCreateHandler = (values: FormValues) => {
+    const firstLayerId = crypto.randomUUID();
     const payload: ProjectProp = {
       id: crypto.randomUUID(),
       name: values.name,
@@ -23,6 +24,16 @@ export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
       height: values.height,
       createdDate: new Date().getTime(),
       preview: "",
+      layers: {
+        [firstLayerId]: {
+          id: firstLayerId,
+          isVisible: true,
+          label: "Новый слой",
+          opacity: 100,
+          sortOrder: 1,
+          url: "",
+        }
+      }
     };
 
     dispatch(createProject(payload));
