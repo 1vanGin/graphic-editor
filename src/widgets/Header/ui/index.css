@@ -1,0 +1,47 @@
+.header {
+  width: 100%;
+  height: 30px;
+  background-color: #f2f2f2;
+}
+
+.btns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 230px;
+  height: 100%;
+  margin-left: 20px;
+  cursor: default;
+}
+
+.btn-file:hover .menu-file {
+  display: flex;
+}
+
+.btn-text-project:hover {
+  cursor: pointer;
+}
+
+.btn-correction:hover .menu-correction {
+  display: flex;
+}
+
+.menu {
+  display: none;
+  width: 200px;
+  position: absolute;
+  flex-direction: column;
+  z-index: 10000;
+  background-color: #f2f2f2;
+  border: 1px rgb(225, 225, 225) solid;
+}
+
+.menu-item {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+}

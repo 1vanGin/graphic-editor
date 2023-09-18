@@ -1,34 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { LayersState } from "./types";
 import { ILayer } from "../ui/types";
+import { setProjectLayersThunk } from "./layersThunk";
 
 const initialState: LayersState = {
-  layers: [
-    {
-      id: "1",
-      label: "Слой 1",
-      isVisible: true,
-      opacity: 100,
-      sortOrder: 1,
-      url: "",
-    },
-    {
-      id: "2",
-      label: "Слой 2",
-      isVisible: true,
-      opacity: 100,
-      sortOrder: 2,
-      url: "",
-    },
-    {
-      id: "3",
-      label: "Слой 3",
-      isVisible: false,
-      opacity: 100,
-      sortOrder: 3,
-      url: "",
-    },
-  ],
+  layers: [],
   activeLayer: null,
   dragLayer: null,
 };
@@ -47,9 +23,9 @@ export const layersSlice = createSlice({
       const filteredLayers = state.layers.filter((item) => item.id !== action.payload);
       state.layers = filteredLayers;
     },
-    toggleVisability(state, action: PayloadAction<ILayer>) {
+    toggleVisibility(state, action: PayloadAction<ILayer>) {
       const findIndex = state.layers.findIndex((item) => item.id == action.payload.id);
-      state.layers[findIndex].isVisible = !action.payload.isVisible;
+      state.layers[findIndex].isVisible = action.payload.isVisible;
     },
     changeLayerLabel(state, action: PayloadAction<{ id: string; newLabel: string }>) {
       state.layers.map((item) => {
@@ -58,31 +34,34 @@ export const layersSlice = createSlice({
         }
       });
     },
-    dragLayer(state, action: PayloadAction<ILayer | null>) {
-      state.dragLayer = action.payload;
-    },
-    setLayersOrder(state, action: PayloadAction<ILayer>) {
-      const updatedLayers = state.layers.map((layer) => {
-        if (layer?.id === action.payload?.id) {
-          return { ...layer, sortOrder: state.dragLayer?.sortOrder };
+    changeLayerOpacity(state, action: PayloadAction<{ id: string; opacity: number }>) {
+      state.layers.map((item) => {
+        if (action.payload.id === item.id) {
+          return (item.opacity = action.payload.opacity);
         }
-        if (layer?.id === state.dragLayer?.id) {
-          return { ...layer, sortOrder: action.payload?.id };
-        }
-        return layer;
       });
-
-      state.layers = updatedLayers as ILayer[];
     },
+    changeLayerImageUrl(state, action: PayloadAction<{ id: string; url: string }>) {
+      state.layers.map((item) => {
+        if (action.payload.id === item.id) {
+          return (item.url = action.payload.url);
+        }
+      });
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(setProjectLayersThunk, (state, action) => {
+      state.layers = action.payload;
+    });
   },
 });
 
 export const {
   addLayer,
   deleteLayer,
-  toggleVisability,
+  toggleVisibility,
   setActiveLayer,
   changeLayerLabel,
-  dragLayer,
-  setLayersOrder,
+  changeLayerImageUrl,
+  changeLayerOpacity,
 } = layersSlice.actions;
