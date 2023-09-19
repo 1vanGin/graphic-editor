@@ -6,12 +6,17 @@ import {
   ActionIcon,
   Tooltip,
   getStylesRef,
-  Flex,
   Stack,
   rem,
   ScrollArea,
 } from "@mantine/core";
-import { IconTrash, IconLayersSubtract, IconEye, IconEyeOff, IconPlus } from "@tabler/icons-react";
+import {
+  IconTrash,
+  IconLayersSubtract,
+  IconEye,
+  IconEyeOff,
+  IconPlus,
+} from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { SliderHover } from "shared/SliderHover/ui";
 import {
@@ -56,9 +61,11 @@ const useStyles = createStyles((theme) => ({
         variant: "light",
         color: theme.primaryColor,
       }).background,
-      color: theme.fn.variant({ variant: "light", color: theme.primaryColor }).color,
+      color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
+        .color,
       [`& .${getStylesRef("icon")}`]: {
-        color: theme.fn.variant({ variant: "light", color: theme.primaryColor }).color,
+        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
+          .color,
       },
     },
   },
@@ -74,7 +81,10 @@ export function Layers() {
   const projectId = useAppSelector((state) => state.projects.openProjectId);
   const { updateProjectLayer, deleteProjectLayer } = useFirebaseDb();
 
-  const handleEditableTextChange = (layer: ILayer, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditableTextChange = (
+    layer: ILayer,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const newLabel = event.currentTarget.value;
     const layerProps = { ...layer };
     dispatch(
@@ -139,54 +149,6 @@ export function Layers() {
     });
     dispatch(setActiveLayer(newLayer));
   };
-
-  // const mainLayers = layers.map((layer) => (
-  //   <Group
-  //     key={layer.id}
-  //     position="apart"
-  //     fz="xs"
-  //     fw="500"
-  //     p="xs"
-  //     w="100%"
-  //     className={cx(classes.layer, {
-  //       [classes.layerActive]: layer.id === active?.id,
-  //     })}
-  //     onClick={() => {
-  //       dispatch(setActiveLayer(layer));
-  //     }}
-  //   >
-  //     <Group>
-  //       <IconLayersSubtract size={20} stroke={1.5} />
-  //       <EditableText
-  //         id={`${layer.id}`}
-  //         text={layer.label}
-  //         handleChange={(event) => handleEditableTextChange(layer, event)}
-  //       />
-  //     </Group>
-  //     <div>
-  //       <Tooltip label="Видимость слоя" withArrow position="bottom">
-  //         <UnstyledButton
-  //           mr="xs"
-  //           onClick={(e) => {
-  //             toggleVisibilityHandler(layer);
-  //             e.stopPropagation();
-  //           }}
-  //         >
-  //           {layer.isVisible ? (
-  //             <IconEye size={20} stroke={1.5} />
-  //           ) : (
-  //             <IconEyeOff size={20} stroke={1.5} />
-  //           )}
-  //         </UnstyledButton>
-  //       </Tooltip>
-  //       <Tooltip label="Удалить слой" withArrow position="bottom">
-  //         <UnstyledButton onClick={() => deleteLayerHandler(layer)}>
-  //           <IconTrash size={20} stroke={1.5} />
-  //         </UnstyledButton>
-  //       </Tooltip>
-  //     </div>
-  //   </Group>
-  // ));
 
   const mainLayers = state.map((layer, index) => (
     <Draggable key={layer.id} index={index} draggableId={layer.id}>
@@ -267,14 +229,20 @@ export function Layers() {
       </Group>
       {active && (
         <Stack my="sm" pl="md" pr="xl">
-          <SliderHover value={active.opacity} onChange={onChangeOpacityLayerHandler} />
+          <SliderHover
+            value={active.opacity}
+            onChange={onChangeOpacityLayerHandler}
+          />
         </Stack>
       )}
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>
         <Stack px="xs" mb="xs">
           <DragDropContext
             onDragEnd={({ destination, source }) =>
-              handlers.reorder({ from: source.index, to: destination?.index || 0 })
+              handlers.reorder({
+                from: source.index,
+                to: destination?.index || 0,
+              })
             }
           >
             <Droppable droppableId="dnd-list" direction="vertical">
