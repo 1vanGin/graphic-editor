@@ -21,6 +21,12 @@ export interface ProjectProp {
 
 
 export interface IUpdateProjectLayers {
-  projectId: string
-  layer: ILayer
+  projectId: string;
+  layer: ILayer;
+}
+
+export interface IUpdateProjectLayerImageUrl {
+  projectId: string;
+  layerId: string;
+  url: string;
 }

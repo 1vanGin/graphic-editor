@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   IconBrush,
   IconEraser,
@@ -13,10 +13,12 @@ import "./index.css";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { setColor, setTypeTool } from "../model/slice";
 import { Instrument } from "features/History/ui/types";
+import { useOnClickOutside } from 'usehooks-ts'
 
 const Toolbar = () => {
   const dispatch = useAppDispatch();
   const { color, typeTool } = useAppSelector((state) => state.toolbar);
+  const ref = useRef(null);
 
   const [isShowPalette, setShowPalette] = useState<Boolean>(false);
 
@@ -28,8 +30,12 @@ const Toolbar = () => {
     setShowPalette(!isShowPalette);
   };
 
+  useOnClickOutside(ref, () => {
+    setShowPalette(false);
+  });
+
   return (
-    <div className="">
+    <div ref={ref}>
       <Card shadow="sm" padding="sm" radius="md" className="toolbar">
         <IconButton
           onClick={() => handlerClickInstrument(Instrument.brush)}

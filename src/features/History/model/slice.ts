@@ -1,40 +1,9 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { HistoryState } from "./types";
-import { IHistoryAction, Instrument } from "../ui/types";
+import { IHistoryAction } from "../ui/types";
 
 const initialState: HistoryState = {
-  history: [
-    {
-      id: "1",
-      label: "Действие 1",
-      instrument: Instrument.ellipse,
-      isCancel: false,
-      startPoint: { x: 0, y: 0 },
-      flashingPoints: [],
-      endPoint: { x: 0, y: 0 },
-      layerId: "l1",
-    },
-    {
-      id: "2",
-      label: "Действие 2",
-      instrument: Instrument.brush,
-      isCancel: false,
-      startPoint: { x: 0, y: 0 },
-      flashingPoints: [],
-      endPoint: { x: 0, y: 0 },
-      layerId: "l2",
-    },
-    {
-      id: "3",
-      label: "Действие 3",
-      instrument: Instrument.line,
-      isCancel: false,
-      startPoint: { x: 0, y: 0 },
-      flashingPoints: [],
-      endPoint: { x: 0, y: 0 },
-      layerId: "l3",
-    },
-  ],
+  history: [],
 };
 
 export const historySlice = createSlice({
@@ -69,7 +38,10 @@ export const historySlice = createSlice({
         }
       }
     },
+    clear(state) {
+      state.history = [];
+    }
   },
 });
 
-export const { addAction, toggleCanceledAction, undo, redo } = historySlice.actions;
+export const { addAction, toggleCanceledAction, undo, redo, clear } = historySlice.actions;

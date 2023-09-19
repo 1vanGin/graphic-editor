@@ -2,7 +2,7 @@ import { onValue, ref, remove, set, update } from "@firebase/database";
 import { firebaseDB } from "app/firebase";
 import { useState } from "react";
 import { Database } from "../enums";
-import { IUpdateProjectLayers, ProjectProp } from "shared/ui/NewProjectForm/interfaces";
+import { IUpdateProjectLayerImageUrl, IUpdateProjectLayers, ProjectProp } from "shared/ui/NewProjectForm/interfaces";
 import { useAppDispatch } from "app/store/hooks.ts";
 import { setProjectsFromServer } from "widgets/ProjectCardList/model/slice.ts";
 import { ILayer } from "features/Layers/ui/types";
@@ -23,7 +23,7 @@ export const useFirebaseDb = () => {
       width: payload.width,
       createdDate: payload.createdDate,
       preview: "",
-      layers: {},
+      layers: payload.layers,
     }).then(() => {
       setLoading(false);
     });
@@ -51,6 +51,20 @@ export const useFirebaseDb = () => {
       });
   };
 
+  const updateProjectPreview = async (projectId: string, preview: string) => {
+    const updates: {
+      [key: string]: string;
+    } = {};
+    updates[`/${Database.projects}/${projectId}/preview`] = preview;
+    return update(ref(firebaseDB), updates)
+      .then(() => {
+        console.log("Project was updated");
+      })
+      .catch((error) => {
+        console.log("Something in database went wrong...", error);
+      });
+  };
+
 
   const updateProjectLayer = async ({ projectId, layer }: IUpdateProjectLayers) => {
     const updates: {
@@ -60,6 +74,20 @@ export const useFirebaseDb = () => {
     return update(ref(firebaseDB, `/${Database.projects}/${projectId}/layers/`), updates)
       .then(() => {
         console.log("Layer was updated");
+      })
+      .catch((error) => {
+        console.log("Something in database went wrong...", error);
+      });
+  };
+
+  const updateProjectLayerImageUrl = async ({ projectId, layerId, url }: IUpdateProjectLayerImageUrl) => {
+    const updates: {
+      [key: string]: string;
+    } = {};
+    updates[`/${Database.projects}/${projectId}/layers/${layerId}/url`] = url;
+    return update(ref(firebaseDB), updates)
+      .then(() => {
+        console.log("Layer image url was updated");
       })
       .catch((error) => {
         console.log("Something in database went wrong...", error);
@@ -108,7 +136,9 @@ export const useFirebaseDb = () => {
     deleteProjectFromDB,
     fetchProjects,
     updateProjectLayer,
+    updateProjectLayerImageUrl,
     deleteProjectLayer,
+    updateProjectPreview,
     loading,
   };
 };
