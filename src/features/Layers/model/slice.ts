@@ -6,7 +6,6 @@ import { setProjectLayersThunk } from "./layersThunk";
 const initialState: LayersState = {
   layers: [],
   activeLayer: null,
-  dragLayer: null,
 };
 
 export const layersSlice = createSlice({
