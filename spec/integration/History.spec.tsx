@@ -6,7 +6,7 @@ import { ToolkitStore } from "@reduxjs/toolkit/dist/configureStore";
 import { History } from "features/History";
 import { act } from "react-dom/test-utils";
 import { addAction } from "features/History/model/slice";
-import { Instrument } from "features/History/ui/types";
+import { IHistoryAction, Instrument } from "features/History/ui/types";
 
 window.ResizeObserver =
   window.ResizeObserver ||
@@ -23,7 +23,7 @@ describe("History Component", () => {
       reducer: rootReducer,
     });
 
-    const actionToAdd = {
+    const actionToAdd: IHistoryAction = {
       id: "1",
       label: "Действие 1",
       isCancel: false,
