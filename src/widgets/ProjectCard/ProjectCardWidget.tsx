@@ -1,5 +1,5 @@
+import React, { useEffect } from "react";
 import { IProjectCard } from "entities/ProjectCard/interfaces";
-import { useEffect } from "react";
 import { useFirebaseStorage } from "shared/hooks";
 import { ContextMenuFeature } from "features";
 import { ProjectCardComponent, RenameProjectModal } from "entities/ProjectCard";
@@ -13,7 +13,7 @@ export const ProjectCardWidget: React.FC<ProjectCardType> = ({ project }) => {
 
   useEffect(() => {
     if (project?.id && project?.name && project?.preview)
-      getImageLink(project.id, 'preview');
+      getImageLink(project.id, "preview");
   }, []);
 
   return (

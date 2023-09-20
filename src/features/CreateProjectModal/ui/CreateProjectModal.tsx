@@ -1,5 +1,4 @@
-import { Button, Modal } from "@mantine/core";
-import { ReactElement, useState } from "react";
+import { Modal } from "@mantine/core";
 import { NewProjectForm } from "shared/ui";
 import { createProject } from "widgets/ProjectCardList/model/slice";
 import { FormValues, ProjectProp } from "shared/ui/NewProjectForm/interfaces";
@@ -7,11 +6,16 @@ import { useFirebaseDb } from "shared/hooks";
 import { useAppDispatch } from "app/store/hooks.ts";
 
 type CreateProjectType = {
-  children: ReactElement | ReactElement[] | string;
+  // children: ReactElement | ReactElement[] | string;
+  opened: boolean;
+  onClose: () => void;
 };
 
-export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
-  const [opened, setOpened] = useState(false);
+export const CreateProjectModal: React.FC<CreateProjectType> = ({
+  opened,
+  onClose,
+}) => {
+  // const [opened, setOpened] = useState(false);
   const { addProject } = useFirebaseDb();
   const dispatch = useAppDispatch();
 
@@ -32,26 +36,23 @@ export const CreateProject: React.FC<CreateProjectType> = ({ children }) => {
           opacity: 100,
           sortOrder: 1,
           url: "",
-        }
-      }
+        },
+      },
     };
 
     dispatch(createProject(payload));
     addProject(payload);
-    setOpened(false);
+    onClose();
   };
 
   return (
-    <>
-      <Button onClick={() => setOpened(true)}>{children}</Button>
-      <Modal
-        opened={opened}
-        onClose={() => setOpened(false)}
-        title="Добавить новый проект"
-        centered
-      >
-        <NewProjectForm onCreate={onCreateHandler} />
-      </Modal>
-    </>
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title="Добавить новый проект"
+      centered
+    >
+      <NewProjectForm onCreate={onCreateHandler} />
+    </Modal>
   );
 };
