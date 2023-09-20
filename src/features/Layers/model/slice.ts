@@ -6,6 +6,7 @@ import { setProjectLayersThunk } from "./layersThunk";
 const initialState: LayersState = {
   layers: [],
   activeLayer: null,
+  dragLayer: null,
 };
 
 export const layersSlice = createSlice({
@@ -55,5 +56,12 @@ export const layersSlice = createSlice({
   },
 });
 
-export const { addLayer, deleteLayer, toggleVisibility, setActiveLayer, changeLayerLabel, changeLayerImageUrl, changeLayerOpacity } =
-  layersSlice.actions;
+export const {
+  addLayer,
+  deleteLayer,
+  toggleVisibility,
+  setActiveLayer,
+  changeLayerLabel,
+  changeLayerImageUrl,
+  changeLayerOpacity,
+} = layersSlice.actions;
