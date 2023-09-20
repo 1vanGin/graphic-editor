@@ -17,7 +17,7 @@ const ProjectPage = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const project = useAppSelector((state) => state.projects.projects).find(
-    (item: IProjectCard) => item.id === id,
+    (item: IProjectCard) => item.id === id
   );
   const { fetchProjects, loading } = useFirebaseDb();
 
@@ -30,7 +30,7 @@ const ProjectPage = () => {
       fetchProjects();
     } else {
       dispatch(setOpenProjectId(project.id));
-      dispatch(setProjectLayers(project.id))
+      dispatch(setProjectLayers(project.id));
     }
   }, [project]);
 
