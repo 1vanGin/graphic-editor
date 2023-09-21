@@ -1,4 +1,4 @@
-import { IHistoryAction } from "features/History/ui/types";
+import { IHistoryAction } from "entities/ActionItem";
 
 export type HistoryState = {
   history: IHistoryAction[];

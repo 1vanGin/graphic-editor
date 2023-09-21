@@ -8,7 +8,7 @@ import {
   undo,
   redo,
 } from "features/History/model/slice";
-import { IHistoryAction, Instrument } from "features/History/ui/types";
+import { IHistoryAction, Instrument } from "entities/ActionItem";
 
 describe("historySlice", () => {
   let store: ToolkitStore;

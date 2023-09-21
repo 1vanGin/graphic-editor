@@ -1,7 +1,6 @@
 import { Text, Group, Flex, ScrollArea } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
-
-import { IHistoryAction } from "entities/ActionItem/ui/types";
+import { IHistoryAction } from "entities/ActionItem";
 import { ActionItem } from "entities/ActionItem";
 import { toggleCanceledAction } from "../model/slice";
 

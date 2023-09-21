@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ToolbarState } from "../interfaces";
-import { Instrument } from "features/History/ui/types";
+import { Instrument } from "entities/ActionItem";
 
 const initialState: ToolbarState = {
   color: "#000000",
@@ -14,10 +14,7 @@ export const toolbarSlice = createSlice({
     setColor: (state, action: PayloadAction<string>) => {
       state.color = action.payload;
     },
-    setTypeTool: (
-      state,
-      action: PayloadAction<Instrument>
-    ) => {
+    setTypeTool: (state, action: PayloadAction<Instrument>) => {
       state.typeTool = action.payload;
     },
   },
