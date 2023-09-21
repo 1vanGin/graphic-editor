@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { IProjectCard } from "entities/ProjectCard/interfaces";
 import { useFirebaseStorage } from "shared/hooks";
 import { ContextMenuFeature } from "features";
-import { ProjectCardComponent, RenameProjectModal } from "entities/ProjectCard";
+import { ProjectCardComponent } from "entities/ProjectCard";
 
 type ProjectCardType = {
   project: IProjectCard;
@@ -23,7 +23,6 @@ export const ProjectCardWidget: React.FC<ProjectCardType> = ({ project }) => {
         project={project}
         imageLink={imageLink}
       />
-      <RenameProjectModal project={project} />
     </>
   );
 };

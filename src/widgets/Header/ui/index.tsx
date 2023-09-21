@@ -104,10 +104,14 @@ export const Header = () => {
         opened={openedCreatedModal}
         onClose={() => setOpenedCreateModal(false)}
       />
-      <DeleteProjectModal
-        opened={openedDeleteModal}
-        onClose={() => setOpenedDeleteModal(false)}
-      />
+
+      {id && (
+        <DeleteProjectModal
+          projectId={id}
+          opened={openedDeleteModal}
+          onClose={() => setOpenedDeleteModal(false)}
+        />
+      )}
 
       {openedNotification && (
         <Notification color="teal" title={"Сохранено"}>

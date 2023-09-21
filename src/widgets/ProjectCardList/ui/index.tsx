@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAppSelector } from "app/store/hooks.ts";
 import { CreateProjectModal } from "features/CreateProjectModal";
 import { ProjectCardWidget } from "widgets/ProjectCard/ProjectCardWidget.tsx";
@@ -11,6 +11,7 @@ interface ProjectCardListProps {
 export const ProjectCardList = ({ open }: ProjectCardListProps) => {
   const { projects } = useAppSelector((state) => state.projects);
   const [opened, setOpened] = useState(false);
+
   return (
     <>
       <Flex
@@ -26,7 +27,7 @@ export const ProjectCardList = ({ open }: ProjectCardListProps) => {
       </Flex>
       <SimpleGrid cols={3}>
         {projects.map((card) => (
-          <ProjectCardWidget key={card.id as React.Key} project={card} />
+          <ProjectCardWidget key={card.id} project={card} />
         ))}
       </SimpleGrid>
     </>
