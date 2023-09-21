@@ -1,4 +1,3 @@
-
 export interface ILayer {
   id: string;
   label: string;
