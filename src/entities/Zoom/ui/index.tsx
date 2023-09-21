@@ -11,7 +11,7 @@ export function Zoom() {
   return (
     <Card display="flex" shadow="sm" padding="sm" radius="md">
       <IconButton
-        icon={<IconMinus size="1rem" color="black" />}
+        icon={<IconMinus data-testid="decrease-zoom-button" size="1rem" color="black" />}
         variant={"subtle"}
         onClick={() => {
           dispatch(decreaseZoom());
@@ -19,7 +19,7 @@ export function Zoom() {
       />
       <div className="zoom_value_container">{zoomValue}%</div>
       <IconButton
-        icon={<IconPlus size="1rem" color="black" />}
+        icon={<IconPlus data-testid="increase-zoom-button" size="1rem" color="black" />}
         variant={"subtle"}
         onClick={() => {
           dispatch(increaseZoom());
