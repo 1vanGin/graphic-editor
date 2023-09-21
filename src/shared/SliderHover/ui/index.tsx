@@ -4,13 +4,14 @@ import { useHover } from "@mantine/hooks";
 type SliderHoverProps = {
   value: number;
   onChange: (value: number) => void;
-}
+};
 
 export function SliderHover({ value, onChange }: SliderHoverProps) {
   const { hovered, ref } = useHover();
 
   return (
     <Slider
+      data-testid="layers-slider"
       min={0}
       max={100}
       ref={ref}

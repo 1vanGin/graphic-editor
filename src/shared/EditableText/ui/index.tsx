@@ -24,6 +24,7 @@ export const EditableText = ({ text, handleChange, id }: IEditableTextProps) => 
         <input
           id={id}
           autoFocus
+          data-testid="editable-input"
           className="EditableText_input"
           type="text"
           value={text}

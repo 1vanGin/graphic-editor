@@ -10,13 +10,7 @@ import {
   rem,
   ScrollArea,
 } from "@mantine/core";
-import {
-  IconTrash,
-  IconLayersSubtract,
-  IconEye,
-  IconEyeOff,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconTrash, IconLayersSubtract, IconEye, IconEyeOff, IconPlus } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { SliderHover } from "shared/SliderHover/ui";
 import {
@@ -61,11 +55,9 @@ const useStyles = createStyles((theme) => ({
         variant: "light",
         color: theme.primaryColor,
       }).background,
-      color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-        .color,
+      color: theme.fn.variant({ variant: "light", color: theme.primaryColor }).color,
       [`& .${getStylesRef("icon")}`]: {
-        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-          .color,
+        color: theme.fn.variant({ variant: "light", color: theme.primaryColor }).color,
       },
     },
   },
@@ -81,10 +73,7 @@ export function Layers() {
   const projectId = useAppSelector((state) => state.projects.openProjectId);
   const { updateProjectLayer, deleteProjectLayer } = useFirebaseDb();
 
-  const handleEditableTextChange = (
-    layer: ILayer,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleEditableTextChange = (layer: ILayer, event: React.ChangeEvent<HTMLInputElement>) => {
     const newLabel = event.currentTarget.value;
     const layerProps = { ...layer };
     dispatch(
@@ -187,6 +176,7 @@ export function Layers() {
               <Tooltip label="Видимость слоя" withArrow position="bottom">
                 <UnstyledButton
                   mr="xs"
+                  data-testid="toggle-visibility-button"
                   onClick={(e) => {
                     toggleVisibilityHandler(layer);
                     e.stopPropagation();
@@ -223,16 +213,13 @@ export function Layers() {
         </Text>
         <Tooltip label="Создать слой" withArrow position="bottom">
           <ActionIcon variant="default" size={18}>
-            <IconPlus size="0.8rem" stroke={1.5} onClick={addHandler} />
+            <IconPlus data-testid="add-new-layer" size="0.8rem" stroke={1.5} onClick={addHandler} />
           </ActionIcon>
         </Tooltip>
       </Group>
       {active && (
         <Stack my="sm" pl="md" pr="xl">
-          <SliderHover
-            value={active.opacity}
-            onChange={onChangeOpacityLayerHandler}
-          />
+          <SliderHover value={active.opacity} onChange={onChangeOpacityLayerHandler} />
         </Stack>
       )}
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>

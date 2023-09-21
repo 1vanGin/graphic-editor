@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { ZoomState } from "./types";
 
-const initialState = {
+const initialState: ZoomState = {
   zoomValue: 100,
 };
 
@@ -13,14 +14,14 @@ export const zoomSlice = createSlice({
       if (zoom > 200) {
         zoom = 200;
       }
-      return { ...state, zoomValue: zoom }
+      return { ...state, zoomValue: zoom };
     },
     decreaseZoom(state) {
       let zoom = state.zoomValue - 5;
       if (zoom < 5) {
         zoom = 5;
       }
-      return { ...state, zoomValue: zoom }
+      return { ...state, zoomValue: zoom };
     },
   },
 });

@@ -7,12 +7,11 @@ import { store } from "app/store/store.tsx";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-
-  <React.StrictMode>
-    <Provider store={store}>
-      <MantineProvider withGlobalStyles withNormalizeCSS>
-        <App />
-      </MantineProvider>
-    </Provider>
-  </React.StrictMode>,
-
+  // <React.StrictMode>
+  <Provider store={store}>
+    <MantineProvider withGlobalStyles withNormalizeCSS>
+      <App />
+    </MantineProvider>
+  </Provider>
+  //  </React.StrictMode>
+);
