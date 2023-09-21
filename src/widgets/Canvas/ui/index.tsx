@@ -4,21 +4,15 @@ import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { addAction } from "features/History/model/slice";
 import { Instrument } from "features/History/ui/types";
-import {
-  drawEllipse,
-  drawLine,
-  drawRect,
-  clear,
-  drawBrush,
-  eraser,
-} from "../utils";
+import { drawEllipse, drawLine, drawRect, clear, drawBrush, eraser } from "../utils";
 import { Point, drawFunctionPropsType } from "../interfaces";
 import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
 import { IProjectCard } from "entities/ProjectCard/interfaces";
 import { changeLayerImageUrl } from "features/Layers/model/slice";
 import { updateProject } from "widgets/ProjectCardList/model/slice";
-import { ILayer } from "features/Layers/ui/types";
+
 import { useInterval } from "usehooks-ts";
+import { ILayer } from "entities/LayersItem/ui/types";
 
 type CanvasProps = {
   project: IProjectCard;
@@ -45,9 +39,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const { uploadFile } = useFirebaseStorage();
   const dispatch = useAppDispatch();
   const { updateProjectPreview, updateProjectLayerImageUrl } = useFirebaseDb();
-  const { color, typeTool: currentInstrument } = useAppSelector(
-    (state) => state.toolbar,
-  );
+  const { color, typeTool: currentInstrument } = useAppSelector((state) => state.toolbar);
   const layers = useAppSelector((state) => state.layers.layers);
   const activeLayer = useAppSelector((state) => state.layers.activeLayer);
   const zoomValue = useAppSelector((state) => state.zoom.zoomValue);
@@ -76,13 +68,10 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
               const data = {
                 ...project,
                 preview: url,
-                layers: layers.reduce(
-                  (acc: { [key: string]: ILayer }, item) => {
-                    acc[item.id] = item;
-                    return acc;
-                  },
-                  {},
-                ),
+                layers: layers.reduce((acc: { [key: string]: ILayer }, item) => {
+                  acc[item.id] = item;
+                  return acc;
+                }, {}),
               };
               dispatch(updateProject({ id: item.projectId, data }));
               updateProjectPreview(item.projectId, url);
@@ -104,10 +93,10 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     file: File,
     projectId: string,
     layerId: string,
-    needToUpdateUrl: boolean,
+    needToUpdateUrl: boolean
   ) => {
     const index = queue.current.findIndex(
-      (item) => item.projectId === projectId && item.layerId === layerId,
+      (item) => item.projectId === projectId && item.layerId === layerId
     );
     if (index !== -1) {
       queue.current[index].file = file;
@@ -150,18 +139,12 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const restoreLayerFromHistory = (layer: virtualLayerType) => {
     const supportCtx = supportLayer.current?.getContext("2d");
     if (supportLayer.current && supportCtx) {
-      clear(
-        supportCtx,
-        supportLayer.current.width,
-        supportLayer.current.height,
-      );
+      clear(supportCtx, supportLayer.current.width, supportLayer.current.height);
     }
 
     const ctx = layer.canvas.getContext("2d");
     if (ctx !== null) {
-      const records = history.filter(
-        (item) => item.layerId === layer.id && !item.isCancel,
-      );
+      const records = history.filter((item) => item.layerId === layer.id && !item.isCancel);
       clear(ctx, project.width, project.height);
       ctx.drawImage(layer.initialImage, 0, 0);
       records.reverse().forEach((record) => {
@@ -193,12 +176,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     canvasRef.current?.toBlob((blob) => {
       if (blob) {
         let file = new File([blob], "preview.png", { type: "image/png" });
-        addFileToQueue(
-          file,
-          project.id,
-          "preview.png",
-          !Boolean(project.preview),
-        );
+        addFileToQueue(file, project.id, "preview.png", !Boolean(project.preview));
         // uploadFile(project.id, file)?.then((url: string) => {
         //     if (!project.preview) {
         //         const data = {
@@ -216,10 +194,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     }, "image/png");
   };
 
-  const draw = (
-    instrument: Instrument,
-    instrumentData: drawFunctionPropsType,
-  ) => {
+  const draw = (instrument: Instrument, instrumentData: drawFunctionPropsType) => {
     switch (instrument) {
       case Instrument.brush:
         drawBrush(instrumentData);
@@ -239,16 +214,12 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     }
   };
 
-  const mouseMoveHandler: React.MouseEventHandler<HTMLCanvasElement> = (
-    event,
-  ) => {
+  const mouseMoveHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
     if (drawing.current) {
       currestPoint.current.x = event.nativeEvent.offsetX / scale;
       currestPoint.current.y = event.nativeEvent.offsetY / scale;
       flashingPoints.current.push({ ...currestPoint.current });
-      const virtualCanvas = virtualLayers.current.find(
-        (layer) => layer.id === activeLayer?.id,
-      );
+      const virtualCanvas = virtualLayers.current.find((layer) => layer.id === activeLayer?.id);
       if (virtualCanvas) {
         const ctx = virtualCanvas.canvas.getContext("2d");
         const supportCtx = supportLayer.current?.getContext("2d");
@@ -270,9 +241,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     }
   };
 
-  const mouseDownHandler: React.MouseEventHandler<HTMLCanvasElement> = (
-    event,
-  ) => {
+  const mouseDownHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
     flashingPoints.current = [];
     startPoint.current.x = event.nativeEvent.offsetX / scale;
     startPoint.current.y = event.nativeEvent.offsetY / scale;
@@ -294,9 +263,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     }
   };
 
-  const mouseUpHandler: React.MouseEventHandler<HTMLCanvasElement> = (
-    event,
-  ) => {
+  const mouseUpHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
     endPoint.current.x = event.nativeEvent.offsetX / scale;
     endPoint.current.y = event.nativeEvent.offsetY / scale;
     drawing.current = false;
@@ -348,9 +315,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     }, []);
 
     layers.forEach((layerId) => {
-      const virtualCanvas = virtualLayers.current.find(
-        (layer) => layer.id === layerId,
-      );
+      const virtualCanvas = virtualLayers.current.find((layer) => layer.id === layerId);
       if (virtualCanvas) {
         restoreLayerFromHistory(virtualCanvas);
       }
@@ -386,9 +351,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     }
     let sort = 0;
     const promises = layers.map(async (layer) => {
-      const index = virtualLayers.current.findIndex(
-        (item) => item.id === layer.id,
-      );
+      const index = virtualLayers.current.findIndex((item) => item.id === layer.id);
       // Сортировка слоёв, если не задан sortOrder
       sort = layer.sortOrder || sort + 1;
       if (index !== -1) {
@@ -429,7 +392,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
       requestAnimationFrame(() => {
         renderLayers();
         savePreview();
-      }),
+      })
     );
   }, [layers, projectId]);
 

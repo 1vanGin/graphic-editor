@@ -1,4 +1,4 @@
-import { ILayer } from "features/Layers/ui/types.ts";
+import { ILayer } from "entities/LayersItem/ui/types";
 
 export interface IProjectCard {
   id: string;

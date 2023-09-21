@@ -6,7 +6,7 @@ import { Layers } from "features/Layers";
 import { addLayer } from "features/Layers/model/slice";
 import { ToolkitStore } from "@reduxjs/toolkit/dist/configureStore";
 import { rootReducer } from "app/store/rootReducer";
-import { ILayer } from "features/Layers/ui/types";
+import { ILayer } from "entities/LayersItem/ui/types";
 
 window.ResizeObserver =
   window.ResizeObserver ||
