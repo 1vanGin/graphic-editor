@@ -10,7 +10,7 @@ const store: ToolkitStore = configureStore({
 });
 
 describe("Zoom Component", () => {
-  it("рндерит компонент Zoom с начальным значением", () => {
+  it("рендерит компонент Zoom с начальным значением", () => {
     const { getByText } = render(
       <Provider store={store}>
         <Zoom />
