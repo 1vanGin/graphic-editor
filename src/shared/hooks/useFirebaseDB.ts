@@ -2,10 +2,14 @@ import { onValue, ref, remove, set, update } from "@firebase/database";
 import { firebaseDB } from "app/firebase";
 import { useState } from "react";
 import { Database } from "../enums";
-import { IUpdateProjectLayerImageUrl, IUpdateProjectLayers, ProjectProp } from "shared/ui/NewProjectForm/interfaces";
+import {
+  IUpdateProjectLayerImageUrl,
+  IUpdateProjectLayers,
+  ProjectProp,
+} from "shared/ui/NewProjectForm/interfaces";
 import { useAppDispatch } from "app/store/hooks.ts";
 import { setProjectsFromServer } from "widgets/ProjectCardList/model/slice.ts";
-import { ILayer } from "features/Layers/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 export const useFirebaseDb = () => {
   const dbRef = ref(firebaseDB, Database.projects);
@@ -65,7 +69,6 @@ export const useFirebaseDb = () => {
       });
   };
 
-
   const updateProjectLayer = async ({ projectId, layer }: IUpdateProjectLayers) => {
     const updates: {
       [key: string]: ILayer;
@@ -80,7 +83,11 @@ export const useFirebaseDb = () => {
       });
   };
 
-  const updateProjectLayerImageUrl = async ({ projectId, layerId, url }: IUpdateProjectLayerImageUrl) => {
+  const updateProjectLayerImageUrl = async ({
+    projectId,
+    layerId,
+    url,
+  }: IUpdateProjectLayerImageUrl) => {
     const updates: {
       [key: string]: string;
     } = {};
@@ -94,7 +101,6 @@ export const useFirebaseDb = () => {
       });
   };
 
-
   const deleteProjectLayer = async ({ projectId, layer }: IUpdateProjectLayers) => {
     return remove(ref(firebaseDB, `/${Database.projects}/${projectId}/layers/${layer.id}`))
       .then(() => {
@@ -104,8 +110,6 @@ export const useFirebaseDb = () => {
         console.log("Something in database went wrong...", error);
       });
   };
-
-
 
   const fetchProjects = () => {
     setLoading(true);
@@ -118,7 +122,7 @@ export const useFirebaseDb = () => {
         if (data) {
           const projects: ProjectProp[] = Object.values(data);
           const sortedProjects: ProjectProp[] = projects.sort((a, b) =>
-            a.createdDate > b.createdDate ? 1 : -1,
+            a.createdDate > b.createdDate ? 1 : -1
           );
           dispatch(setProjectsFromServer(sortedProjects));
         }
@@ -126,7 +130,7 @@ export const useFirebaseDb = () => {
       },
       (error) => {
         console.log("Something in database went wrong...", error);
-      },
+      }
     );
   };
 

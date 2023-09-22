@@ -6,3 +6,7 @@ export interface ILayer {
   sortOrder: number;
   opacity: number;
 }
+
+export interface ILayersItemProps {
+  layer: ILayer;
+}

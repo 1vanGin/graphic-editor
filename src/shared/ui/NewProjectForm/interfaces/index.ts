@@ -1,4 +1,4 @@
-import { ILayer } from "features/Layers/ui/types.ts";
+import { ILayer } from "entities/LayersItem";
 
 export interface FormValues {
   name: string;
@@ -17,8 +17,6 @@ export interface ProjectProp {
     [key: string]: ILayer;
   };
 }
-
-
 
 export interface IUpdateProjectLayers {
   projectId: string;
