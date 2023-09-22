@@ -12,9 +12,7 @@ export const projectsSlice = createSlice({
   initialState,
   reducers: {
     setProjectsFromServer(state, action: PayloadAction<IProjectCard[]>) {
-      if (state.projects.length === 0) {
-        state.projects = action.payload;
-      }
+      state.projects = action.payload;
     },
     setOpenProjectId(state, action: PayloadAction<string>) {
       state.openProjectId = action.payload;
