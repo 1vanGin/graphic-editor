@@ -1,11 +1,13 @@
 import { ILayer } from "entities/LayersItem";
 
+
 export interface IProjectCard {
   id: string;
   name: string;
   width: number;
   height: number;
   createdDate: number;
+  updatedDate: number;
   preview?: string;
   layers?: {
     [key: string]: ILayer;

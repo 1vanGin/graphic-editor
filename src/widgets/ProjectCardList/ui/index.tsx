@@ -11,7 +11,7 @@ interface ProjectCardListProps {
 export const ProjectCardList = ({ open }: ProjectCardListProps) => {
   const { projects } = useAppSelector((state) => state.projects);
   const [opened, setOpened] = useState(false);
-
+  const projectsList = [...projects]
   return (
     <>
       <Flex
@@ -26,9 +26,10 @@ export const ProjectCardList = ({ open }: ProjectCardListProps) => {
         <CreateProjectModal opened={opened} onClose={() => setOpened(false)} />
       </Flex>
       <SimpleGrid cols={3}>
-        {projects.map((card) => (
-          <ProjectCardWidget key={card.id} project={card} />
-        ))}
+        {projectsList
+          .map((card) => (
+            <ProjectCardWidget key={card.id} project={card} />
+          ))}
       </SimpleGrid>
     </>
   );

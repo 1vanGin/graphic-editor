@@ -40,7 +40,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef<Boolean>(false);
   const startPoint = useRef<Point>({ x: 0, y: 0 });
-  const currestPoint = useRef<Point>({ x: 0, y: 0 });
+  const currentPoint = useRef<Point>({ x: 0, y: 0 });
   const flashingPoints = useRef<Point[]>([]);
   const endPoint = useRef<Point>({ x: 0, y: 0 });
   const virtualLayers = useRef<virtualLayerType[]>([]);
@@ -210,8 +210,8 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
 
   const mouseMoveHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
     if (drawing.current) {
-      currestPoint.current = getCursorPoint(event, scale);
-      flashingPoints.current.push({ ...currestPoint.current });
+      currentPoint.current = getCursorPoint(event, scale);
+      flashingPoints.current.push({ ...currentPoint.current });
       const virtualCanvas = virtualLayers.current.find((layer) => layer.id === activeLayer?.id);
       if (virtualCanvas) {
         const ctx = virtualCanvas.canvas.getContext("2d");
@@ -222,7 +222,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
           const instrumentData: drawFunctionPropsType = {
             ctx: currentInstrument === Instrument.eraser ? ctx : supportCtx,
             startPoint: { ...startPoint.current },
-            endPoint: { ...currestPoint.current },
+            endPoint: { ...currentPoint.current },
             color: color,
             flashingPoints: [...flashingPoints.current],
           };
