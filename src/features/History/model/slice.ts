@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { HistoryState } from "./types";
-import { IHistoryAction } from "../ui/types";
+import { IHistoryAction } from "entities/ActionItem";
 
 const initialState: HistoryState = {
   history: [],
@@ -40,7 +40,7 @@ export const historySlice = createSlice({
     },
     clear(state) {
       state.history = [];
-    }
+    },
   },
 });
 

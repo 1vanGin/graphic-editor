@@ -2,7 +2,7 @@ import { Box } from "@mantine/core";
 import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { addAction } from "features/History/model/slice";
-import { Instrument } from "features/History/ui/types";
+import { Instrument } from "entities/ActionItem";
 import {
   drawEllipse,
   drawLine,

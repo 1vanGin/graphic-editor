@@ -12,8 +12,9 @@ import { Card, ColorPicker } from "@mantine/core";
 import "./index.css";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { setColor, setTypeTool } from "../model/slice";
-import { Instrument } from "features/History/ui/types";
-import { useOnClickOutside } from 'usehooks-ts'
+
+import { useOnClickOutside } from "usehooks-ts";
+import { Instrument } from "entities/ActionItem";
 
 const Toolbar = () => {
   const dispatch = useAppDispatch();
@@ -70,10 +71,7 @@ const Toolbar = () => {
       </Card>
       {isShowPalette && (
         <Card shadow="sm" padding="sm" radius="md" className="color-picker">
-          <ColorPicker
-            value={color}
-            onChange={(color) => dispatch(setColor(color))}
-          />
+          <ColorPicker value={color} onChange={(color) => dispatch(setColor(color))} />
         </Card>
       )}
     </div>

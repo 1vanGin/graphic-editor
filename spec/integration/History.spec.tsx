@@ -6,7 +6,7 @@ import { ToolkitStore } from "@reduxjs/toolkit/dist/configureStore";
 import { History } from "features/History";
 import { act } from "react-dom/test-utils";
 import { addAction } from "features/History/model/slice";
-import { IHistoryAction, Instrument } from "features/History/ui/types";
+import { IHistoryAction, Instrument } from "entities/ActionItem";
 
 window.ResizeObserver =
   window.ResizeObserver ||
