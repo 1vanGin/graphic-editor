@@ -10,5 +10,5 @@ export const setProjectLayers = (projectId: string): AppThunk => (dispatch, getS
     const project = state.projects.projects.filter(project => project.id === projectId);
     const layers = project[0]?.layers;
     if (!layers) return;
-    dispatch(setProjectLayersThunk(Object.values(layers)));
+    dispatch(setProjectLayersThunk(Object.values(layers).sort((a, b) => a.sortOrder - b.sortOrder)));
 };
