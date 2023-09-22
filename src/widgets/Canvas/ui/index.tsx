@@ -1,5 +1,4 @@
 import { Box } from "@mantine/core";
-import "./index.css";
 import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { addAction } from "features/History/model/slice";
@@ -11,35 +10,16 @@ import {
   clear,
   drawBrush,
   eraser,
+  getCursorPoint
 } from "../utils";
-import { Point, drawFunctionPropsType } from "../interfaces";
+import { CanvasProps, Point, drawFunctionPropsType, queueItemType, virtualLayerType } from "../interfaces";
 import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
-import { IProjectCard } from "entities/ProjectCard/interfaces";
 import { changeLayerImageUrl } from "features/Layers/model/slice";
 import { updateProject } from "widgets/ProjectCardList/model/slice";
 import { ILayer } from "features/Layers/ui/types";
 import { useInterval } from "usehooks-ts";
 
-type CanvasProps = {
-  project: IProjectCard;
-};
-
-type virtualLayerType = {
-  id: string;
-  opacity: number;
-  canvas: HTMLCanvasElement;
-  sort: number;
-  isVisible: boolean;
-  initialImage: HTMLImageElement;
-  url: string;
-};
-
-type queueItemType = {
-  file: File;
-  projectId: string;
-  layerId: string;
-  needToUpdateUrl: boolean;
-};
+import "./index.css";
 
 export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const { uploadFile } = useFirebaseStorage();
@@ -66,38 +46,47 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
 
   const queue = useRef<queueItemType[]>([]);
 
-  useInterval(() => {
+  const saveLayersFiles = async () => {
+    const promises: Promise<void>[] = [];
     while (queue.current.length > 0) {
       const item = queue.current.pop();
       if (item) {
-        uploadFile(item.projectId, item.file)?.then((url: string) => {
-          if (item.needToUpdateUrl) {
-            if (item.layerId === "preview.png") {
-              const data = {
-                ...project,
-                preview: url,
-                layers: layers.reduce(
-                  (acc: { [key: string]: ILayer }, item) => {
-                    acc[item.id] = item;
-                    return acc;
-                  },
-                  {},
-                ),
-              };
-              dispatch(updateProject({ id: item.projectId, data }));
-              updateProjectPreview(item.projectId, url);
-            } else {
-              dispatch(changeLayerImageUrl({ id: item.projectId, url }));
-              updateProjectLayerImageUrl({
-                projectId: item.projectId,
-                layerId: item.layerId,
-                url: url,
-              });
+        promises.push(new Promise(resolve => {
+          uploadFile(item.projectId, item.file)?.then((url: string) => {
+            if (item.needToUpdateUrl) {
+              if (item.layerId === "preview.png") {
+                const data = {
+                  ...project,
+                  preview: url,
+                  layers: layers.reduce(
+                    (acc: { [key: string]: ILayer }, item) => {
+                      acc[item.id] = item;
+                      return acc;
+                    },
+                    {},
+                  ),
+                };
+                dispatch(updateProject({ id: item.projectId, data }));
+                updateProjectPreview(item.projectId, url);
+              } else {
+                dispatch(changeLayerImageUrl({ id: item.projectId, url }));
+                updateProjectLayerImageUrl({
+                  projectId: item.projectId,
+                  layerId: item.layerId,
+                  url: url,
+                });
+              }
             }
-          }
-        });
+            resolve();
+          });
+        }));
       }
     }
+    return Promise.all(promises);
+  }
+
+  useInterval(() => {
+    saveLayersFiles;
   }, 5000);
 
   const addFileToQueue = (
@@ -188,32 +177,22 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     savePreview();
   };
 
-  const savePreview = () => {
+  const savePreview = async () => {
     // Сохранение файла preview в Firebase
-    canvasRef.current?.toBlob((blob) => {
-      if (blob) {
-        let file = new File([blob], "preview.png", { type: "image/png" });
-        addFileToQueue(
-          file,
-          project.id,
-          "preview.png",
-          !Boolean(project.preview),
-        );
-        // uploadFile(project.id, file)?.then((url: string) => {
-        //     if (!project.preview) {
-        //         const data = {
-        //             ...project, preview: url,
-        //             layers: layers.reduce((acc: { [key: string]: ILayer }, item) => {
-        //                 acc[item.id] = item;
-        //                 return acc;
-        //             }, {})
-        //         };
-        //         dispatch(updateProject({ id: project.id, data }));
-        //         updateProjectPreview(project.id, url);
-        //     }
-        // });
-      }
-    }, "image/png");
+    return new Promise<void>((resolve) => {
+      canvasRef.current?.toBlob((blob) => {
+        if (blob) {
+          let file = new File([blob], "preview.png", { type: "image/png" });
+          addFileToQueue(
+            file,
+            project.id,
+            "preview.png",
+            !Boolean(project.preview),
+          );
+        }
+      }, "image/png");
+      resolve();
+    });
   };
 
   const draw = (
@@ -243,8 +222,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     event,
   ) => {
     if (drawing.current) {
-      currestPoint.current.x = event.nativeEvent.offsetX / scale;
-      currestPoint.current.y = event.nativeEvent.offsetY / scale;
+      currestPoint.current = getCursorPoint(event, scale);
       flashingPoints.current.push({ ...currestPoint.current });
       const virtualCanvas = virtualLayers.current.find(
         (layer) => layer.id === activeLayer?.id,
@@ -274,8 +252,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     event,
   ) => {
     flashingPoints.current = [];
-    startPoint.current.x = event.nativeEvent.offsetX / scale;
-    startPoint.current.y = event.nativeEvent.offsetY / scale;
+    startPoint.current = getCursorPoint(event, scale);
     drawing.current = true;
   };
 
@@ -297,8 +274,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const mouseUpHandler: React.MouseEventHandler<HTMLCanvasElement> = (
     event,
   ) => {
-    endPoint.current.x = event.nativeEvent.offsetX / scale;
-    endPoint.current.y = event.nativeEvent.offsetY / scale;
+    endPoint.current = getCursorPoint(event, scale);
     drawing.current = false;
 
     if (activeLayer) {
@@ -315,27 +291,6 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
       };
       dispatch(addAction(action));
     }
-
-    // const virtualCanvas = virtualLayers.current.find(layer => layer.id === activeLayer?.id)
-    // if (virtualCanvas) {
-    //     const ctx = virtualCanvas.canvas.getContext('2d');
-    //     const supportCtx = supportLayer.current?.getContext('2d');
-
-    //     if (ctx && supportCtx) {
-    //         // const instrumentData: drawFunctionPropsType = {
-    //         //     ctx: ctx,
-    //         //     startPoint: startPoint.current,
-    //         //     endPoint: endPoint.current,
-    //         //     color: color,
-    //         //     flashingPoints: flashingPoints.current,
-    //         // };
-
-    //         // draw(currentInstrument, instrumentData);
-    //         // requestAnimationFrame(() => renderLayers());
-
-    //     }
-    // }
-    // requestAnimationFrame(() => renderLayers());
   };
 
   useEffect(() => {
@@ -432,6 +387,26 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
       }),
     );
   }, [layers, projectId]);
+
+  useEffect(() => {
+    const handleTabClose = (event: BeforeUnloadEvent) => {
+      savePreview();
+      saveLayersFiles();
+
+      if (queue.current.length > 0) {
+        event.preventDefault();
+        return (event.returnValue =
+          'Проект не сохранён! Вы действительно хотите закрыть страницу?');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleTabClose);
+
+    return () => {
+      savePreview().then(saveLayersFiles);
+      window.removeEventListener('beforeunload', handleTabClose);
+    };
+  }, []);
 
   return (
     <Box className="canvas-container" pr={{ sm: 300 }}>
