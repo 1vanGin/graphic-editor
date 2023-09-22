@@ -9,7 +9,7 @@ import {
   setActiveLayer,
   toggleVisibility,
 } from "features/Layers/model/slice";
-import { ILayer } from "features/Layers/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 describe("layersSlice", () => {
   let store: ToolkitStore;

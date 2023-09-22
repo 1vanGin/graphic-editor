@@ -10,7 +10,7 @@ import { useState } from "react";
 import { saveBlob } from "../helpers";
 import { getStorage } from "firebase/storage";
 import { useFirebaseDb } from ".";
-import { ILayer } from "features/Layers/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 export const useFirebaseStorage = () => {
   const storage = getStorage();
@@ -51,7 +51,7 @@ export const useFirebaseStorage = () => {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
             resolve(url);
             setIsUploading(false);
-          }),
+          })
       );
     });
   };
@@ -77,13 +77,12 @@ export const useFirebaseStorage = () => {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
             resolve(url);
             setIsUploading(false);
-          }),
+          })
       );
-      const layerProps = { ...layer }
-      layerProps.url = layerUrl
-      updateProjectLayer({ projectId, layer: layerProps })
+      const layerProps = { ...layer };
+      layerProps.url = layerUrl;
+      updateProjectLayer({ projectId, layer: layerProps });
     });
-
   };
 
   const downloadFile = (projectId: string, imageName: string) => {
