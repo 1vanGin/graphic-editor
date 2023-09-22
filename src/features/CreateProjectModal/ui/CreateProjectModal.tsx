@@ -5,6 +5,8 @@ import { FormValues } from "shared/ui/NewProjectForm/interfaces";
 import { useFirebaseDb } from "shared/hooks";
 import { useAppDispatch } from "app/store/hooks.ts";
 import { IProjectCard } from "entities/ProjectCard/interfaces";
+import { useNavigate } from "react-router-dom";
+
 
 type CreateProjectType = {
   // children: ReactElement | ReactElement[] | string;
@@ -19,6 +21,7 @@ export const CreateProjectModal: React.FC<CreateProjectType> = ({
   // const [opened, setOpened] = useState(false);
   const { addProject } = useFirebaseDb();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate()
 
   const onCreateHandler = (values: FormValues) => {
     const firstLayerId = crypto.randomUUID();
@@ -45,6 +48,7 @@ export const CreateProjectModal: React.FC<CreateProjectType> = ({
     dispatch(createProject(payload));
     addProject(payload);
     onClose();
+    navigate(`/projects/${payload.id}`)
   };
 
   return (
