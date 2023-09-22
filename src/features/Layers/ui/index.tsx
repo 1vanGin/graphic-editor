@@ -6,7 +6,7 @@ import { addLayer, setActiveLayer, changeLayerOpacity } from "../model/slice";
 
 import { useFirebaseDb } from "shared/hooks";
 import { useListState } from "@mantine/hooks";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable, OnDragEndResponder } from "react-beautiful-dnd";
 import { useEffect } from "react";
 import { LayersItem } from "entities/LayersItem";
 import { ILayer } from "entities/LayersItem";
@@ -46,6 +46,13 @@ export function Layers() {
     }
   };
 
+  const onDragEndHandler: OnDragEndResponder = ({ destination, source }) => {
+    handlers.reorder({
+      from: source.index,
+      to: destination?.index || 0,
+    });
+  }
+
   const addHandler = () => {
     const newLayer: ILayer = {
       id: crypto.randomUUID(),
@@ -84,6 +91,18 @@ export function Layers() {
     handlers.setState([...layers]);
   }, [layers]);
 
+  useEffect(() => {
+    state.forEach((stateLayer, index) => {
+      const layer = layers.find((item) => item.id === stateLayer.id);
+      if (layer && layer.sortOrder !== index) {
+        updateProjectLayer({
+          projectId,
+          layer: { ...layer, sortOrder: index },
+        });
+      }
+    })
+  }, [state]);
+
   return (
     <>
       <Group pl="md" pr="xl" my="sm" position="apart">
@@ -104,12 +123,7 @@ export function Layers() {
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>
         <Stack px="xs" mb="xs">
           <DragDropContext
-            onDragEnd={({ destination, source }) =>
-              handlers.reorder({
-                from: source.index,
-                to: destination?.index || 0,
-              })
-            }
+            onDragEnd={onDragEndHandler}
           >
             <Droppable droppableId="dnd-list" direction="vertical">
               {(provided) => (

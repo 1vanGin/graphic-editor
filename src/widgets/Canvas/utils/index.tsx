@@ -1,4 +1,4 @@
-import { drawFunction } from "../interfaces";
+import { Point, drawFunction } from "../interfaces";
 
 const drawLine: drawFunction = ({ ctx, startPoint, endPoint, color }) => {
     ctx.strokeStyle = color;
@@ -75,4 +75,11 @@ const clear = (
     ctx.clearRect(0, 0, height, width);
 };
 
-export { clear, drawLine, drawRect, drawEllipse, drawBrush, eraser };
+const getCursorPoint = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>, scale: number): Point => {
+    return {
+        x: event.nativeEvent.offsetX / scale,
+        y: event.nativeEvent.offsetY / scale
+    }
+}
+
+export { clear, drawLine, drawRect, drawEllipse, drawBrush, eraser, getCursorPoint };
