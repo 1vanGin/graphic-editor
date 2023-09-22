@@ -21,7 +21,7 @@ export const ProjectCardComponent = ({
   imageLink,
 }: ProjectCardComponentProps) => {
   return (
-    <MantineCard withBorder shadow="sm" radius="md">
+    <MantineCard withBorder shadow="sm" radius="md" data-testid='project-card'>
       <MantineCard.Section withBorder inheritPadding py="xs">
         <MantineGroup position="apart">
           <Link to={`/projects/${project.id}`}>

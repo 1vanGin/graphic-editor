@@ -51,6 +51,7 @@ export const CreateProjectModal: React.FC<CreateProjectType> = ({
       onClose={onClose}
       title="Добавить новый проект"
       centered
+      data-testid='create-project-modal'
     >
       <NewProjectForm onCreate={onCreateHandler} />
     </Modal>
