@@ -23,16 +23,16 @@ const ProjectPage = () => {
 
   useEffect(() => {
     dispatch(clearHistory());
-  }, [project?.id]);
+  }, [id]);
 
   useEffect(() => {
-    if (!project) {
-      fetchProjects();
-    } else {
+    // Загрузка актуальной версии проетов     
+    fetchProjects();
+    if (project) {
       dispatch(setOpenProjectId(project.id));
       dispatch(setProjectLayers(project.id));
     }
-  }, [project]);
+  }, [id]);
 
   if (!project || loading) return <Loader />;
 
