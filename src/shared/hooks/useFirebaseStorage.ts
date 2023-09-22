@@ -10,7 +10,7 @@ import { useState } from "react";
 import { saveBlob } from "../helpers";
 import { getStorage } from "firebase/storage";
 import { useFirebaseDb } from ".";
-import { ILayer } from "entities/LayersItem/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 export const useFirebaseStorage = () => {
   const storage = getStorage();

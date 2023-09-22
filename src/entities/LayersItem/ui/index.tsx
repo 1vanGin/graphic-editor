@@ -1,5 +1,5 @@
 import { createStyles, UnstyledButton, Group, Tooltip, getStylesRef, rem } from "@mantine/core";
-import { ILayer, ILayersItemProps } from "./types";
+import { ILayer, ILayersItemProps } from "../interface";
 import { EditableText } from "shared/EditableText";
 import { IconTrash, IconLayersSubtract, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";

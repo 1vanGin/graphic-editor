@@ -1,7 +1,7 @@
 // layersThunks.ts
 import { createAction } from "@reduxjs/toolkit";
 import { AppThunk } from "app/store/store";
-import { ILayer } from "entities/LayersItem/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 export const setProjectLayersThunk = createAction<ILayer[]>("layers/setProjectLayersThunk");
 

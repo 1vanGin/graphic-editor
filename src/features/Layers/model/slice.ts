@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { LayersState } from "./types";
 
 import { setProjectLayersThunk } from "./layersThunk";
-import { ILayer } from "entities/LayersItem/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 const initialState: LayersState = {
   layers: [],

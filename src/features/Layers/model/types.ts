@@ -1,4 +1,4 @@
-import { ILayer } from "entities/LayersItem/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 export type LayersState = {
   layers: ILayer[];

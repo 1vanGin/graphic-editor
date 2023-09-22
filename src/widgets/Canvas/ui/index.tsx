@@ -12,7 +12,7 @@ import { changeLayerImageUrl } from "features/Layers/model/slice";
 import { updateProject } from "widgets/ProjectCardList/model/slice";
 
 import { useInterval } from "usehooks-ts";
-import { ILayer } from "entities/LayersItem/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 type CanvasProps = {
   project: IProjectCard;

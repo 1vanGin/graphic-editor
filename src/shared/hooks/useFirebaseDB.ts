@@ -9,7 +9,7 @@ import {
 } from "shared/ui/NewProjectForm/interfaces";
 import { useAppDispatch } from "app/store/hooks.ts";
 import { setProjectsFromServer } from "widgets/ProjectCardList/model/slice.ts";
-import { ILayer } from "entities/LayersItem/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 export const useFirebaseDb = () => {
   const dbRef = ref(firebaseDB, Database.projects);

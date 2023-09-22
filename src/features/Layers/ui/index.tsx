@@ -9,7 +9,7 @@ import { useListState } from "@mantine/hooks";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useEffect } from "react";
 import { LayersItem } from "entities/LayersItem";
-import { ILayer } from "entities/LayersItem/ui/types";
+import { ILayer } from "entities/LayersItem";
 
 const useStyles = createStyles((theme) => ({
   item: {
