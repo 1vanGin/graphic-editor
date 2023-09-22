@@ -23,7 +23,7 @@ const ProjectPage = () => {
 
   useEffect(() => {
     dispatch(clearHistory());
-  }, [id]);
+  }, [project?.id]);
 
   useEffect(() => {
     // Загрузка актуальной версии проетов     
@@ -32,7 +32,7 @@ const ProjectPage = () => {
       dispatch(setOpenProjectId(project.id));
       dispatch(setProjectLayers(project.id));
     }
-  }, [id]);
+  }, [project?.id]);
 
   if (!project || loading) return <Loader />;
 
