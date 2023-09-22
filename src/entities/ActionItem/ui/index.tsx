@@ -1,4 +1,4 @@
-import { IActionItemProps, Instrument } from "./types";
+import { IActionItemProps, Instrument } from "../interface";
 import {
   IconCircle,
   IconEraser,

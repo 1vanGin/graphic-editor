@@ -1,4 +1,4 @@
 export { ActionItem } from "./ui";
 
-export type { IHistoryAction } from "./ui/types.ts";
-export { Instrument } from "./ui/types.ts";
+export type { IHistoryAction } from "./interface/index.ts";
+export { Instrument } from "./interface/index.ts";
