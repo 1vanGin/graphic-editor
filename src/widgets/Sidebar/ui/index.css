@@ -1,9 +1,9 @@
 .Sidebar_card {
-    height: 100vh;
-    width: 19%;
-    position: fixed;
-    right: 0;
-    top: 0;
-    border: 0;
-    border-radius: 0;
+  height: 100vh;
+  width: 25%;
+  position: fixed;
+  right: 0;
+  top: 0;
+  border: 0;
+  border-radius: 0;
 }

@@ -1,4 +1,12 @@
-import { createStyles, Text, Group, ActionIcon, Tooltip, Stack, ScrollArea } from "@mantine/core";
+import {
+  createStyles,
+  Text,
+  Group,
+  ActionIcon,
+  Tooltip,
+  Stack,
+  ScrollArea,
+} from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { SliderHover } from "shared/SliderHover/ui";
@@ -6,10 +14,16 @@ import { addLayer, setActiveLayer, changeLayerOpacity } from "../model/slice";
 
 import { useFirebaseDb } from "shared/hooks";
 import { useListState } from "@mantine/hooks";
-import { DragDropContext, Droppable, Draggable, OnDragEndResponder } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  OnDragEndResponder,
+} from "react-beautiful-dnd";
 import { useEffect } from "react";
 import { LayersItem } from "entities/LayersItem";
 import { ILayer } from "entities/LayersItem";
+import { countLayerLabel } from "../lib";
 
 const useStyles = createStyles((theme) => ({
   item: {
@@ -51,17 +65,20 @@ export function Layers() {
       from: source.index,
       to: destination?.index || 0,
     });
-  }
+  };
 
   const addHandler = () => {
     const newLayer: ILayer = {
       id: crypto.randomUUID(),
-      label: "Новый слой",
+      label: "",
       isVisible: true,
       opacity: 100,
       url: "",
       sortOrder: 0,
     };
+    const newLabel = `Слой ${countLayerLabel(layers)}`;
+    newLayer.label = newLabel;
+
     dispatch(addLayer(newLayer));
     updateProjectLayer({
       projectId,
@@ -100,7 +117,7 @@ export function Layers() {
           layer: { ...layer, sortOrder: index },
         });
       }
-    })
+    });
   }, [state]);
 
   return (
@@ -111,20 +128,26 @@ export function Layers() {
         </Text>
         <Tooltip label="Создать слой" withArrow position="bottom">
           <ActionIcon variant="default" size={18}>
-            <IconPlus data-testid="add-new-layer" size="0.8rem" stroke={1.5} onClick={addHandler} />
+            <IconPlus
+              data-testid="add-new-layer"
+              size="0.8rem"
+              stroke={1.5}
+              onClick={addHandler}
+            />
           </ActionIcon>
         </Tooltip>
       </Group>
       {active && (
         <Stack my="sm" pl="md" pr="xl">
-          <SliderHover value={active.opacity} onChange={onChangeOpacityLayerHandler} />
+          <SliderHover
+            value={active.opacity}
+            onChange={onChangeOpacityLayerHandler}
+          />
         </Stack>
       )}
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>
         <Stack px="xs" mb="xs">
-          <DragDropContext
-            onDragEnd={onDragEndHandler}
-          >
+          <DragDropContext onDragEnd={onDragEndHandler}>
             <Droppable droppableId="dnd-list" direction="vertical">
               {(provided) => (
                 <div
