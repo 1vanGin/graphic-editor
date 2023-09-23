@@ -10,21 +10,25 @@ export function Zoom() {
   const zoomValue = useAppSelector((state) => state.zoom.zoomValue);
   return (
     <Card display="flex" shadow="sm" padding="sm" radius="md">
-      <IconButton
-        icon={<IconMinus data-testid="decrease-zoom-button" size="1rem" color="black" />}
-        variant={"subtle"}
-        onClick={() => {
-          dispatch(decreaseZoom());
-        }}
-      />
+      <div title="hotkey: -">
+        <IconButton
+          icon={<IconMinus data-testid="decrease-zoom-button" size="1rem" color="black" />}
+          variant={"subtle"}
+          onClick={() => {
+            dispatch(decreaseZoom());
+          }}
+        />
+      </div>
       <div className="zoom_value_container">{zoomValue}%</div>
-      <IconButton
-        icon={<IconPlus data-testid="increase-zoom-button" size="1rem" color="black" />}
-        variant={"subtle"}
-        onClick={() => {
-          dispatch(increaseZoom());
-        }}
-      />
+      <div title="hotkey: =">
+        <IconButton
+          icon={<IconPlus data-testid="increase-zoom-button" size="1rem" color="black" />}
+          variant={"subtle"}
+          onClick={() => {
+            dispatch(increaseZoom());
+          }}
+        />
+      </div>
     </Card>
   );
 }

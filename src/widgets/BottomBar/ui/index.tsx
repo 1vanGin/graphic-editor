@@ -3,6 +3,7 @@ import { Flex } from "@mantine/core";
 import { useAppDispatch } from "app/store/hooks";
 import { UndoRedo } from "entities/UndoRedo";
 import { Zoom } from "entities/Zoom";
+import { decreaseZoom, increaseZoom } from "entities/Zoom/model/slice";
 import { redo, undo } from "features/History";
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -18,6 +19,12 @@ export function BottomBar() {
 
   useHotkeys('ctrl+z', handleUndoClick);
   useHotkeys('ctrl+y', handleRedoClick);
+  useHotkeys('-', () => {
+    dispatch(decreaseZoom());
+  });
+  useHotkeys('=', () => {
+    dispatch(increaseZoom());
+  });
 
   return (
     <>
