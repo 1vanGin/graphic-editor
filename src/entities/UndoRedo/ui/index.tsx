@@ -10,29 +10,32 @@ interface IUndoRedoProps {
 export function UndoRedo({ onLeftBtnClick, onRightBtnClick }: IUndoRedoProps) {
   return (
     <Card display="flex" shadow="sm" padding="sm" radius="md">
-      <IconButton
-        icon={
-          <IconArrowBackUp
-            data-testid="undo-button"
-            size="1rem"
-            color="black"
-          />
-        }
-        variant={"subtle"}
-        onClick={onLeftBtnClick}
-      />
-
-      <IconButton
-        icon={
-          <IconArrowForwardUp
-            data-testid="redo-button"
-            size="1rem"
-            color="black"
-          />
-        }
-        variant={"subtle"}
-        onClick={onRightBtnClick}
-      />
-    </Card>
+      <div title="Undo (Ctrl+Z)">
+        <IconButton
+          icon={
+            <IconArrowBackUp
+              data-testid="undo-button"
+              size="1rem"
+              color="black"
+            />
+          }
+          variant={"subtle"}
+          onClick={onLeftBtnClick}
+        />
+      </div>
+      <div title="Undo (Ctrl+Y)">
+        <IconButton
+          icon={
+            <IconArrowForwardUp
+              data-testid="redo-button"
+              size="1rem"
+              color="black"
+            />
+          }
+          variant={"subtle"}
+          onClick={onRightBtnClick}
+        />
+      </div>
+    </Card >
   );
 }
