@@ -1,5 +1,5 @@
 import { ILayer } from "entities/LayersItem";
-import { countLayerLabel } from "features/Layers/ui/lib";
+import { countLayerLabel } from "features/Layers/lib";
 
 describe("функция countLayerLabel", () => {
   it("должна возвращать 1, если layers пуст", () => {

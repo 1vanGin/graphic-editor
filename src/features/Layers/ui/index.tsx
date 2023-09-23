@@ -23,7 +23,7 @@ import {
 import { useEffect } from "react";
 import { LayersItem } from "entities/LayersItem";
 import { ILayer } from "entities/LayersItem";
-import { countLayerLabel } from "./lib";
+import { countLayerLabel } from "../lib";
 
 const useStyles = createStyles((theme) => ({
   item: {
