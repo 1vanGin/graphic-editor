@@ -15,6 +15,7 @@ import { setColor, setTypeTool } from "../model/slice";
 
 import { useOnClickOutside } from "usehooks-ts";
 import { Instrument } from "entities/ActionItem";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const Toolbar = () => {
   const dispatch = useAppDispatch();
@@ -35,39 +36,58 @@ const Toolbar = () => {
     setShowPalette(false);
   });
 
+  useHotkeys('B', () => handlerClickInstrument(Instrument.brush));
+  useHotkeys('E', () => handlerClickInstrument(Instrument.eraser));
+  useHotkeys('L', () => handlerClickInstrument(Instrument.line));
+  useHotkeys('R', () => handlerClickInstrument(Instrument.rectangle));
+  useHotkeys('C', () => handlerClickInstrument(Instrument.ellipse));
+  useHotkeys('P', handlerClickColor);
+
   return (
     <div ref={ref}>
       <Card shadow="sm" padding="sm" radius="md" className="toolbar">
-        <IconButton
-          onClick={() => handlerClickInstrument(Instrument.brush)}
-          icon={<IconBrush size="1rem" color="black" />}
-          variant={typeTool === Instrument.brush ? "light" : "subtle"}
-        />
-        <IconButton
-          onClick={() => handlerClickInstrument(Instrument.eraser)}
-          icon={<IconEraser size="1rem" color="black" />}
-          variant={typeTool === Instrument.eraser ? "light" : "subtle"}
-        />
-        <IconButton
-          onClick={() => handlerClickInstrument(Instrument.line)}
-          icon={<IconBackslash size="1rem" color="black" />}
-          variant={typeTool === Instrument.line ? "light" : "subtle"}
-        />
-        <IconButton
-          onClick={() => handlerClickInstrument(Instrument.rectangle)}
-          icon={<IconSquare size="1rem" color="black" />}
-          variant={typeTool === Instrument.rectangle ? "light" : "subtle"}
-        />
-        <IconButton
-          onClick={() => handlerClickInstrument(Instrument.ellipse)}
-          icon={<IconCircle size="1rem" color="black" />}
-          variant={typeTool === Instrument.ellipse ? "light" : "subtle"}
-        />
-        <IconButton
-          onClick={handlerClickColor}
-          icon={<IconPalette size="1rem" color="black" />}
-          variant={isShowPalette ? "light" : "subtle"}
-        />
+        <div title="hotkey: B">
+          <IconButton
+            onClick={() => handlerClickInstrument(Instrument.brush)}
+            icon={<IconBrush size="1rem" color="black" />}
+            variant={typeTool === Instrument.brush ? "light" : "subtle"}
+          />
+        </div>
+        <div title="hotkey: E">
+          <IconButton
+            onClick={() => handlerClickInstrument(Instrument.eraser)}
+            icon={<IconEraser size="1rem" color="black" />}
+            variant={typeTool === Instrument.eraser ? "light" : "subtle"}
+          />
+        </div>
+        <div title="hotkey: L">
+          <IconButton
+            onClick={() => handlerClickInstrument(Instrument.line)}
+            icon={<IconBackslash size="1rem" color="black" />}
+            variant={typeTool === Instrument.line ? "light" : "subtle"}
+          />
+        </div>
+        <div title="hotkey: R">
+          <IconButton
+            onClick={() => handlerClickInstrument(Instrument.rectangle)}
+            icon={<IconSquare size="1rem" color="black" />}
+            variant={typeTool === Instrument.rectangle ? "light" : "subtle"}
+          />
+        </div>
+        <div title="hotkey: C">
+          <IconButton
+            onClick={() => handlerClickInstrument(Instrument.ellipse)}
+            icon={<IconCircle size="1rem" color="black" />}
+            variant={typeTool === Instrument.ellipse ? "light" : "subtle"}
+          />
+        </div>
+        <div title="hotkey: P">
+          <IconButton
+            onClick={handlerClickColor}
+            icon={<IconPalette size="1rem" color="black" />}
+            variant={isShowPalette ? "light" : "subtle"}
+          />
+        </div>
       </Card>
       {isShowPalette && (
         <Card shadow="sm" padding="sm" radius="md" className="color-picker">
