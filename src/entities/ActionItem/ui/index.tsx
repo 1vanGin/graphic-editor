@@ -53,7 +53,6 @@ export function ActionItem({ action, onClickAction }: IActionItemProps) {
   const Icon = getInstrumentIcon(action.instrument);
   return (
     <Group
-      key={action.id}
       position="apart"
       fz="xs"
       fw="500"

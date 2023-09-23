@@ -17,31 +17,44 @@ export const layersSlice = createSlice({
       state.activeLayer = action.payload;
     },
     addLayer(state, action: PayloadAction<ILayer>) {
-      state.layers.push(action.payload);
+      state.layers.unshift(action.payload);
     },
     deleteLayer(state, action: PayloadAction<string>) {
-      const filteredLayers = state.layers.filter((item) => item.id !== action.payload);
+      const filteredLayers = state.layers.filter(
+        (item) => item.id !== action.payload
+      );
       state.layers = filteredLayers;
     },
     toggleVisibility(state, action: PayloadAction<ILayer>) {
-      const findIndex = state.layers.findIndex((item) => item.id == action.payload.id);
+      const findIndex = state.layers.findIndex(
+        (item) => item.id == action.payload.id
+      );
       state.layers[findIndex].isVisible = action.payload.isVisible;
     },
-    changeLayerLabel(state, action: PayloadAction<{ id: string; newLabel: string }>) {
+    changeLayerLabel(
+      state,
+      action: PayloadAction<{ id: string; newLabel: string }>
+    ) {
       state.layers.map((item) => {
         if (action.payload.id === item.id) {
           return (item.label = action.payload.newLabel);
         }
       });
     },
-    changeLayerOpacity(state, action: PayloadAction<{ id: string; opacity: number }>) {
+    changeLayerOpacity(
+      state,
+      action: PayloadAction<{ id: string; opacity: number }>
+    ) {
       state.layers.map((item) => {
         if (action.payload.id === item.id) {
           return (item.opacity = action.payload.opacity);
         }
       });
     },
-    changeLayerImageUrl(state, action: PayloadAction<{ id: string; url: string }>) {
+    changeLayerImageUrl(
+      state,
+      action: PayloadAction<{ id: string; url: string }>
+    ) {
       state.layers.map((item) => {
         if (action.payload.id === item.id) {
           return (item.url = action.payload.url);

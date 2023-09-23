@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "app/store/hooks";
 import { IHistoryAction } from "entities/ActionItem";
 import { ActionItem } from "entities/ActionItem";
 import { toggleCanceledAction } from "../model/slice";
+import React from "react";
 
 export function History() {
   const { history } = useAppSelector((state) => state.history);
@@ -19,9 +20,17 @@ export function History() {
         </Text>
       </Group>
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>
-        <Flex mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
+        <Flex
+          mb="xs"
+          justify="center"
+          align="flex-start"
+          direction="column"
+          wrap="wrap"
+        >
           {history.map((action: IHistoryAction) => (
-            <ActionItem action={action} onClickAction={handleOnClickAction} key={action.id} />
+            <React.Fragment key={action.id}>
+              <ActionItem action={action} onClickAction={handleOnClickAction} />
+            </React.Fragment>
           ))}
         </Flex>
       </ScrollArea>
