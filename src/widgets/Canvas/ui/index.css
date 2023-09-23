@@ -8,9 +8,5 @@ canvas {
     align-items: center;
     justify-content: center;
     height: calc(100% - 30px);
-}
-
-html, body {
-    height: 100%;
     background-color: lightgrey;
 }
