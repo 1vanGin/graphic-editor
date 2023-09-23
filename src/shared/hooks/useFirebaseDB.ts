@@ -5,11 +5,11 @@ import { Database } from "../enums";
 import {
   IUpdateProjectLayerImageUrl,
   IUpdateProjectLayers,
-  ProjectProp,
 } from "shared/ui/NewProjectForm/interfaces";
 import { useAppDispatch } from "app/store/hooks.ts";
 import { setProjectsFromServer } from "widgets/ProjectCardList/model/slice.ts";
 import { ILayer } from "entities/LayersItem";
+import { IProjectCard } from "entities/ProjectCard/interfaces";
 
 export const useFirebaseDb = () => {
   const dbRef = ref(firebaseDB, Database.projects);
@@ -17,7 +17,7 @@ export const useFirebaseDb = () => {
   const dispatch = useAppDispatch();
 
   // for example
-  const addProject = (payload: ProjectProp) => {
+  const addProject = (payload: IProjectCard) => {
     setLoading(true);
     // set data to database
     set(ref(firebaseDB, `${Database.projects}/` + payload.id), {
@@ -26,46 +26,54 @@ export const useFirebaseDb = () => {
       height: payload.height,
       width: payload.width,
       createdDate: payload.createdDate,
+      updatedDate: payload.updatedDate,
       preview: "",
       layers: payload.layers,
     }).then(() => {
+      console.log("New Project add to FB")
       setLoading(false);
+    }).catch((error) => {
+      console.log("addProject: Something in database went wrong...", error);
     });
   };
 
-  const deleteProjectFromDB = (id: ProjectProp["id"]) => {
-    remove(ref(firebaseDB, `${Database.projects}/` + id))
-      .then(() => console.log("Deleted"))
+  const deleteProjectFromDB = (projectId: IProjectCard["id"]) => {
+    remove(ref(firebaseDB, `${Database.projects}/` + projectId))
+      .then(() => {
+        console.log("Project Deleted")
+      })
       .catch((error) => {
-        console.log("Something in database went wrong...", error);
+        console.log("deleteProjectFromDB: Something in database went wrong...", error);
       });
   };
 
-  const updateProjectName = async (values: ProjectProp) => {
+  const updateProjectName = async (project: IProjectCard) => {
     const updates: {
-      [key: string]: string;
+      [key: string]: string
     } = {};
-    updates[`/${Database.projects}/${values.id}/name`] = values.name;
+    updates[`/${Database.projects}/${project.id}/name`] = project.name
     return update(ref(firebaseDB), updates)
       .then(() => {
-        console.log("Project was updated");
+        console.log("Project Name was updated")
+        updateProjectDate(project.id)
       })
       .catch((error) => {
-        console.log("Something in database went wrong...", error);
+        console.log("updateProjectName: Something in database went wrong...", error);
       });
   };
 
   const updateProjectPreview = async (projectId: string, preview: string) => {
     const updates: {
-      [key: string]: string;
+      [key: string]: string | number
     } = {};
     updates[`/${Database.projects}/${projectId}/preview`] = preview;
     return update(ref(firebaseDB), updates)
       .then(() => {
-        console.log("Project was updated");
+        console.log("Project preview was updated");
+        updateProjectDate(projectId)
       })
       .catch((error) => {
-        console.log("Something in database went wrong...", error);
+        console.log("updateProjectPreview: Something in database went wrong...", error);
       });
   };
 
@@ -77,9 +85,24 @@ export const useFirebaseDb = () => {
     return update(ref(firebaseDB, `/${Database.projects}/${projectId}/layers/`), updates)
       .then(() => {
         console.log("Layer was updated");
+        updateProjectDate(projectId)
       })
       .catch((error) => {
-        console.log("Something in database went wrong...", error);
+        console.log("updateProjectLayer: Something in database went wrong...", error);
+      });
+  };
+
+  const updateProjectDate = async (projectId: string) => {
+    const updates: {
+      [key: string]: number
+    } = {};
+    updates[`/${Database.projects}/${projectId}/updatedDate`] = new Date().getTime()
+    return update(ref(firebaseDB), updates)
+      .then(() => {
+        console.log("Project props updatedDate was updated");
+      })
+      .catch((error) => {
+        console.log("updateProjectDate: Something in database went wrong...", error);
       });
   };
 
@@ -95,6 +118,7 @@ export const useFirebaseDb = () => {
     return update(ref(firebaseDB), updates)
       .then(() => {
         console.log("Layer image url was updated");
+        updateProjectDate(projectId)
       })
       .catch((error) => {
         console.log("Something in database went wrong...", error);
@@ -120,10 +144,11 @@ export const useFirebaseDb = () => {
       (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          const projects: ProjectProp[] = Object.values(data);
-          const sortedProjects: ProjectProp[] = projects.sort((a, b) =>
-            a.createdDate > b.createdDate ? 1 : -1
+          const projects: IProjectCard[] = Object.values(data);
+          const sortedProjects: IProjectCard[] = projects.sort((a, b) =>
+            b.updatedDate - a.updatedDate
           );
+          console.log("!!!!!sortedProjects!!!!", sortedProjects)
           dispatch(setProjectsFromServer(sortedProjects));
         }
         setLoading(false);

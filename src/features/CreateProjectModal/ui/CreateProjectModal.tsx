@@ -1,9 +1,10 @@
 import { Modal } from "@mantine/core";
 import { NewProjectForm } from "shared/ui";
 import { createProject } from "widgets/ProjectCardList/model/slice";
-import { FormValues, ProjectProp } from "shared/ui/NewProjectForm/interfaces";
+import { FormValues } from "shared/ui/NewProjectForm/interfaces";
 import { useFirebaseDb } from "shared/hooks";
 import { useAppDispatch } from "app/store/hooks.ts";
+import { IProjectCard } from "entities/ProjectCard/interfaces";
 
 type CreateProjectType = {
   // children: ReactElement | ReactElement[] | string;
@@ -21,12 +22,13 @@ export const CreateProjectModal: React.FC<CreateProjectType> = ({
 
   const onCreateHandler = (values: FormValues) => {
     const firstLayerId = crypto.randomUUID();
-    const payload: ProjectProp = {
+    const payload: IProjectCard = {
       id: crypto.randomUUID(),
       name: values.name,
       width: values.width,
       height: values.height,
       createdDate: new Date().getTime(),
+      updatedDate: new Date().getTime(),
       preview: "",
       layers: {
         [firstLayerId]: {
