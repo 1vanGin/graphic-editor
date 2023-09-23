@@ -356,6 +356,9 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
           layerCtx?.drawImage(img, 0, 0);
         }
       }
+
+      // Удаляем лишние слои из virtualLayers
+      virtualLayers.current = virtualLayers.current.filter(virtualLayer => layers.some(layer => layer.id === virtualLayer.id));
     });
     // Ререндер после загрузки всех картинок
     Promise.all(promises).then(() =>
