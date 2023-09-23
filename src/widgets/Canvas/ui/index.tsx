@@ -11,6 +11,7 @@ import {
   drawBrush,
   eraser,
   getCursorPoint,
+  drawCursor,
 } from "../utils";
 import {
   CanvasProps,
@@ -22,9 +23,9 @@ import {
 import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
 import { changeLayerImageUrl } from "features/Layers/model/slice";
 import { updateProject } from "widgets/ProjectCardList/model/slice";
-
 import { useInterval } from "usehooks-ts";
 import { ILayer } from "entities/LayersItem";
+import { clearEvents } from "../model/slice";
 
 import "./index.css";
 
@@ -37,6 +38,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const activeLayer = useAppSelector((state) => state.layers.activeLayer);
   const zoomValue = useAppSelector((state) => state.zoom.zoomValue);
   const history = useAppSelector((state) => state.history.history);
+  const events = useAppSelector((state) => state.canvas.events);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef<Boolean>(false);
   const startPoint = useRef<Point>({ x: 0, y: 0 });
@@ -48,8 +50,8 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const scale = zoomValue / 100;
   const initialProjectId = useRef<string>();
   const projectId = useAppSelector((state) => state.projects.openProjectId);
-
   const queue = useRef<queueItemType[]>([]);
+  const showCursor = useRef<boolean>(true);
 
   const saveLayersFiles = async () => {
     const promises: Promise<void>[] = [];
@@ -72,7 +74,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
                   dispatch(updateProject({ id: item.projectId, data }));
                   updateProjectPreview(item.projectId, url);
                 } else {
-                  dispatch(changeLayerImageUrl({ id: item.projectId, url }));
+                  dispatch(changeLayerImageUrl({ id: item.layerId, url }));
                   updateProjectLayerImageUrl({
                     projectId: item.projectId,
                     layerId: item.layerId,
@@ -90,7 +92,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   };
 
   useInterval(() => {
-    saveLayersFiles;
+    savePreview().then(saveLayersFiles);
   }, 5000);
 
   const addFileToQueue = (
@@ -138,6 +140,16 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
             }
           }
         });
+
+      // Отрисовка курсора инструмента
+      if (showCursor.current) {
+        drawCursor({
+          ctx,
+          point: currentPoint.current,
+          size: 10,
+          instument: currentInstrument
+        });
+      }
     }
   };
 
@@ -179,12 +191,15 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const savePreview = async () => {
     // Сохранение файла preview в Firebase
     return new Promise<void>((resolve) => {
+      showCursor.current = false;
+      renderLayers();
       canvasRef.current?.toBlob((blob) => {
         if (blob) {
           let file = new File([blob], "preview.png", { type: "image/png" });
           addFileToQueue(file, project.id, "preview.png", !Boolean(project.preview));
         }
       }, "image/png");
+      showCursor.current = true;
       resolve();
     });
   };
@@ -210,8 +225,8 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   };
 
   const mouseMoveHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
+    currentPoint.current = getCursorPoint(event, scale);
     if (drawing.current) {
-      currentPoint.current = getCursorPoint(event, scale);
       flashingPoints.current.push({ ...currentPoint.current });
       const virtualCanvas = virtualLayers.current.find((layer) => layer.id === activeLayer?.id);
       if (virtualCanvas) {
@@ -229,11 +244,21 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
           };
 
           draw(currentInstrument, instrumentData);
-          requestAnimationFrame(() => renderLayers());
         }
       }
     }
+    requestAnimationFrame(() => renderLayers());
   };
+
+  const mouseLeaveHandler = () => {
+    showCursor.current = false;
+    requestAnimationFrame(() => renderLayers());
+  }
+
+  const mouseEnterHandler = () => {
+    showCursor.current = true;
+    requestAnimationFrame(() => renderLayers());
+  }
 
   const mouseDownHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
     flashingPoints.current = [];
@@ -388,6 +413,15 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (events.length) {
+      events.forEach(event => {
+        if (event === 'save') savePreview().then(saveLayersFiles);
+      });
+      dispatch(clearEvents());
+    }
+  }, [events]);
+
   return (
     <Box className="canvas-container" pr={{ sm: 300 }}>
       <Box
@@ -405,6 +439,8 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
             onMouseDown={mouseDownHandler}
             onMouseUp={mouseUpHandler}
             onMouseMove={mouseMoveHandler}
+            onMouseEnter={mouseEnterHandler}
+            onMouseLeave={mouseLeaveHandler}
           ></canvas>
         </Box>
       </Box>

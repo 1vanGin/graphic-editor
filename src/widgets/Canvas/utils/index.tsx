@@ -1,4 +1,5 @@
-import { Point, drawFunction } from "../interfaces";
+import { Instrument } from "entities/ActionItem";
+import { Point, drawCursorProps, drawFunction, drawFunctionPropsType } from "../interfaces";
 
 const drawLine: drawFunction = ({ ctx, startPoint, endPoint, color }) => {
     ctx.strokeStyle = color;
@@ -82,4 +83,29 @@ const getCursorPoint = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>, 
     }
 }
 
-export { clear, drawLine, drawRect, drawEllipse, drawBrush, eraser, getCursorPoint };
+const drawCursor = ({ ctx, point, size, instument }: drawCursorProps) => {
+    if (instument === Instrument.brush || instument === Instrument.eraser) {
+        const data: drawFunctionPropsType = {
+            ctx: ctx,
+            startPoint: { x: point.x - size / 2, y: point.y - size / 2 },
+            endPoint: { x: point.x + size / 2, y: point.y + size / 2 },
+            color: '#000000',
+            flashingPoints: [],
+        }
+        drawEllipse(data);
+    } else {
+        const data: drawFunctionPropsType = {
+            ctx: ctx,
+            startPoint: { x: point.x - size / 2, y: point.y },
+            endPoint: { x: point.x - 2, y: point.y },
+            color: '#000000',
+            flashingPoints: [],
+        }
+        drawLine(data);
+        drawLine({ ...data, startPoint: { x: point.x, y: point.y - size / 2 }, endPoint: { x: point.x, y: point.y - 2 } });
+        drawLine({ ...data, startPoint: { x: point.x + size / 2, y: point.y }, endPoint: { x: point.x + 2, y: point.y } });
+        drawLine({ ...data, startPoint: { x: point.x, y: point.y + size / 2 }, endPoint: { x: point.x, y: point.y + 2 } });
+    }
+};
+
+export { clear, drawLine, drawRect, drawEllipse, drawBrush, eraser, getCursorPoint, drawCursor };
