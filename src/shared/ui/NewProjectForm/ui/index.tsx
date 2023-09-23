@@ -15,7 +15,7 @@ export const NewProjectForm: React.FC<NewProjectFormType> = ({ onCreate }) => {
     },
     validate: {
       name: (value) => (value.trim().length > 0 ? null : "Неверное имя"),
-      height: (value) => (value > 0 ? null : "Неверная высота высота"),
+      height: (value) => (value > 0 ? null : "Неверная высота"),
       width: (value) => (value > 0 ? null : "Неверная ширина"),
     },
   });

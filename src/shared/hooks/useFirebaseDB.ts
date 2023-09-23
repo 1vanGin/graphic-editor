@@ -16,10 +16,8 @@ export const useFirebaseDb = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
-  // for example
   const addProject = (payload: IProjectCard) => {
     setLoading(true);
-    // set data to database
     set(ref(firebaseDB, `${Database.projects}/` + payload.id), {
       id: payload.id,
       name: payload.name,
@@ -29,80 +27,104 @@ export const useFirebaseDb = () => {
       updatedDate: payload.updatedDate,
       preview: "",
       layers: payload.layers,
-    }).then(() => {
-      console.log("New Project add to FB")
-      setLoading(false);
-    }).catch((error) => {
-      console.log("addProject: Something in database went wrong...", error);
-    });
+    })
+      .then(() => {
+        console.log("New Project add to FB");
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log("addProject: Something in database went wrong...", error);
+      });
   };
 
   const deleteProjectFromDB = (projectId: IProjectCard["id"]) => {
     remove(ref(firebaseDB, `${Database.projects}/` + projectId))
       .then(() => {
-        console.log("Project Deleted")
+        console.log("Project Deleted");
       })
       .catch((error) => {
-        console.log("deleteProjectFromDB: Something in database went wrong...", error);
+        console.log(
+          "deleteProjectFromDB: Something in database went wrong...",
+          error,
+        );
       });
   };
 
   const updateProjectName = async (project: IProjectCard) => {
     const updates: {
-      [key: string]: string
+      [key: string]: string;
     } = {};
-    updates[`/${Database.projects}/${project.id}/name`] = project.name
+    updates[`/${Database.projects}/${project.id}/name`] = project.name;
     return update(ref(firebaseDB), updates)
       .then(() => {
-        console.log("Project Name was updated")
-        updateProjectDate(project.id)
+        console.log("Project Name was updated");
+        updateProjectDate(project.id);
       })
       .catch((error) => {
-        console.log("updateProjectName: Something in database went wrong...", error);
+        console.log(
+          "updateProjectName: Something in database went wrong...",
+          error,
+        );
       });
   };
 
   const updateProjectPreview = async (projectId: string, preview: string) => {
     const updates: {
-      [key: string]: string | number
+      [key: string]: string | number;
     } = {};
     updates[`/${Database.projects}/${projectId}/preview`] = preview;
     return update(ref(firebaseDB), updates)
       .then(() => {
         console.log("Project preview was updated");
-        updateProjectDate(projectId)
+        updateProjectDate(projectId);
       })
       .catch((error) => {
-        console.log("updateProjectPreview: Something in database went wrong...", error);
+        console.log(
+          "updateProjectPreview: Something in database went wrong...",
+          error,
+        );
       });
   };
 
-  const updateProjectLayer = async ({ projectId, layer }: IUpdateProjectLayers) => {
+  const updateProjectLayer = async ({
+    projectId,
+    layer,
+  }: IUpdateProjectLayers) => {
     const updates: {
       [key: string]: ILayer;
     } = {};
     updates[layer.id] = layer;
-    return update(ref(firebaseDB, `/${Database.projects}/${projectId}/layers/`), updates)
+    return update(
+      ref(firebaseDB, `/${Database.projects}/${projectId}/layers/`),
+      updates,
+    )
       .then(() => {
         console.log("Layer was updated");
-        updateProjectDate(projectId)
+        updateProjectDate(projectId);
       })
       .catch((error) => {
-        console.log("updateProjectLayer: Something in database went wrong...", error);
+        console.log(
+          "updateProjectLayer: Something in database went wrong...",
+          error,
+        );
       });
   };
 
   const updateProjectDate = async (projectId: string) => {
     const updates: {
-      [key: string]: number
+      [key: string]: number;
     } = {};
-    updates[`/${Database.projects}/${projectId}/updatedDate`] = new Date().getTime()
+    updates[`/${Database.projects}/${projectId}/updatedDate`] =
+      new Date().getTime();
     return update(ref(firebaseDB), updates)
       .then(() => {
         console.log("Project props updatedDate was updated");
       })
       .catch((error) => {
-        console.log("updateProjectDate: Something in database went wrong...", error);
+        console.log(
+          "updateProjectDate: Something in database went wrong...",
+          error,
+        );
       });
   };
 
@@ -118,15 +140,20 @@ export const useFirebaseDb = () => {
     return update(ref(firebaseDB), updates)
       .then(() => {
         console.log("Layer image url was updated");
-        updateProjectDate(projectId)
+        updateProjectDate(projectId);
       })
       .catch((error) => {
         console.log("Something in database went wrong...", error);
       });
   };
 
-  const deleteProjectLayer = async ({ projectId, layer }: IUpdateProjectLayers) => {
-    return remove(ref(firebaseDB, `/${Database.projects}/${projectId}/layers/${layer.id}`))
+  const deleteProjectLayer = async ({
+    projectId,
+    layer,
+  }: IUpdateProjectLayers) => {
+    return remove(
+      ref(firebaseDB, `/${Database.projects}/${projectId}/layers/${layer.id}`),
+    )
       .then(() => {
         console.log("Layer was deleted");
       })
@@ -145,17 +172,17 @@ export const useFirebaseDb = () => {
         const data = snapshot.val();
         if (data) {
           const projects: IProjectCard[] = Object.values(data);
-          const sortedProjects: IProjectCard[] = projects.sort((a, b) =>
-            b.updatedDate - a.updatedDate
+          const sortedProjects: IProjectCard[] = projects.sort(
+            (a, b) => b.updatedDate - a.updatedDate,
           );
-          console.log("!!!!!sortedProjects!!!!", sortedProjects)
+          console.log("!!!!!sortedProjects!!!!", sortedProjects);
           dispatch(setProjectsFromServer(sortedProjects));
         }
         setLoading(false);
       },
       (error) => {
         console.log("Something in database went wrong...", error);
-      }
+      },
     );
   };
 
