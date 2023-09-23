@@ -37,6 +37,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const activeLayer = useAppSelector((state) => state.layers.activeLayer);
   const zoomValue = useAppSelector((state) => state.zoom.zoomValue);
   const history = useAppSelector((state) => state.history.history);
+  const events = useAppSelector((state) => state.canvas.events);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef<Boolean>(false);
   const startPoint = useRef<Point>({ x: 0, y: 0 });
@@ -72,7 +73,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
                   dispatch(updateProject({ id: item.projectId, data }));
                   updateProjectPreview(item.projectId, url);
                 } else {
-                  dispatch(changeLayerImageUrl({ id: item.projectId, url }));
+                  dispatch(changeLayerImageUrl({ id: item.layerId, url }));
                   updateProjectLayerImageUrl({
                     projectId: item.projectId,
                     layerId: item.layerId,
@@ -90,7 +91,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   };
 
   useInterval(() => {
-    saveLayersFiles;
+    savePreview().then(saveLayersFiles);
   }, 5000);
 
   const addFileToQueue = (
@@ -385,6 +386,18 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
       window.removeEventListener("beforeunload", handleTabClose);
     };
   }, []);
+
+  useEffect(() => {
+    if (events.length) {
+      events.forEach(event => {
+        switch (event) {
+          case 'save':
+            savePreview().then(saveLayersFiles);
+            break;
+        }
+      })
+    }
+  }, [events]);
 
   return (
     <Box className="canvas-container" pr={{ sm: 300 }}>

@@ -9,6 +9,7 @@ import { redo, undo } from "features/History";
 import { Notification } from "shared/ui";
 import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
 import { DeleteProjectModal } from "features";
+import { save } from "widgets/Canvas/model/slice";
 
 export const Header = () => {
   const [openedCreatedModal, setOpenedCreateModal] = useState(false);
@@ -37,6 +38,7 @@ export const Header = () => {
   };
 
   const saveProjectHandler = () => {
+    dispatch(save());
     setOpenedNotification(true);
     setTimeout(() => {
       setOpenedNotification(false);

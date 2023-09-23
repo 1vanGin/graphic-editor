@@ -4,6 +4,7 @@ export type Point = { x: number; y: number };
 
 export type CanvasProps = {
     project: IProjectCard;
+    save?: () => void;
 };
 
 export type virtualLayerType = {
