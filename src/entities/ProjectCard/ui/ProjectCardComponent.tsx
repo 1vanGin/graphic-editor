@@ -12,13 +12,11 @@ import { IProjectCard } from "../interfaces";
 interface ProjectCardComponentProps {
   contextMenu: ReactNode;
   project: IProjectCard;
-  imageLink: string;
 }
 
 export const ProjectCardComponent = ({
   contextMenu,
   project,
-  imageLink,
 }: ProjectCardComponentProps) => {
   return (
     <MantineCard withBorder shadow="sm" radius="md" data-testid='project-card'>
@@ -35,7 +33,7 @@ export const ProjectCardComponent = ({
       <Link to={`/projects/${project.id}`}>
         <MantineCard.Section mih={300}>
           {project.preview ? (
-            <Image src={imageLink} height={300} />
+            <Image src={project.preview} height={300} />
           ) : (
             <Center maw={400} h={300} mx="auto">
               <div>Начните рисовать для превью</div>

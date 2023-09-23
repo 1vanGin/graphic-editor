@@ -21,7 +21,7 @@ export function History() {
       <ScrollArea m="xs" h={400} type="auto" offsetScrollbars scrollbarSize={8}>
         <Flex mb="xs" justify="center" align="flex-start" direction="column" wrap="wrap">
           {history.map((action: IHistoryAction) => (
-            <ActionItem action={action} onClickAction={handleOnClickAction} />
+            <ActionItem action={action} onClickAction={handleOnClickAction} key={action.id} />
           ))}
         </Flex>
       </ScrollArea>
