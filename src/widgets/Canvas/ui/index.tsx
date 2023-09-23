@@ -22,9 +22,9 @@ import {
 import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
 import { changeLayerImageUrl } from "features/Layers/model/slice";
 import { updateProject } from "widgets/ProjectCardList/model/slice";
-
 import { useInterval } from "usehooks-ts";
 import { ILayer } from "entities/LayersItem";
+import { clearEvents } from "../model/slice";
 
 import "./index.css";
 
@@ -390,12 +390,9 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   useEffect(() => {
     if (events.length) {
       events.forEach(event => {
-        switch (event) {
-          case 'save':
-            savePreview().then(saveLayersFiles);
-            break;
-        }
-      })
+        if (event === 'save') savePreview().then(saveLayersFiles);
+      });
+      dispatch(clearEvents());
     }
   }, [events]);
 

@@ -14,8 +14,11 @@ export const canvasSlice = createSlice({
   reducers: {
     save(state) {
       state.events.push('save');
+    },
+    clearEvents(state) {
+      state.events = [];
     }
   },
 });
 
-export const { save } = canvasSlice.actions;
+export const { save, clearEvents } = canvasSlice.actions;
