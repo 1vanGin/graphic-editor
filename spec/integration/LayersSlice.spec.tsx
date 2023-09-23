@@ -62,14 +62,16 @@ describe("layersSlice", () => {
     store.dispatch(addLayer(layer));
 
     expect(store.getState().layers.length).toBe(2);
-    expect(store.getState().layers[1]).toEqual(layer);
+    expect(store.getState().layers[0]).toEqual(layer);
   });
 
   it("должен удалить слой", () => {
     store.dispatch(deleteLayer("1"));
 
     expect(store.getState().layers.length).toBe(0);
-    expect(store.getState().layers.map((layer: ILayer) => layer.id)).not.toContain("1");
+    expect(
+      store.getState().layers.map((layer: ILayer) => layer.id)
+    ).not.toContain("1");
   });
 
   it("должен изменить видимость слоя", () => {
