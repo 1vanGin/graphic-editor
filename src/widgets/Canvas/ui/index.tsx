@@ -11,6 +11,7 @@ import {
   drawBrush,
   eraser,
   getCursorPoint,
+  drawCursor,
 } from "../utils";
 import {
   CanvasProps,
@@ -49,8 +50,8 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const scale = zoomValue / 100;
   const initialProjectId = useRef<string>();
   const projectId = useAppSelector((state) => state.projects.openProjectId);
-
   const queue = useRef<queueItemType[]>([]);
+  const showCursor = useRef<boolean>(true);
 
   const saveLayersFiles = async () => {
     const promises: Promise<void>[] = [];
@@ -138,6 +139,16 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
             }
           }
         });
+
+      // Отрисовка курсора инструмента
+      if (showCursor.current) {
+        drawCursor({
+          ctx,
+          point: currentPoint.current,
+          size: 10,
+          instument: currentInstrument
+        });
+      }
     }
   };
 
@@ -179,12 +190,15 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   const savePreview = async () => {
     // Сохранение файла preview в Firebase
     return new Promise<void>((resolve) => {
+      showCursor.current = false;
+      renderLayers();
       canvasRef.current?.toBlob((blob) => {
         if (blob) {
           let file = new File([blob], "preview.png", { type: "image/png" });
           addFileToQueue(file, project.id, "preview.png", !Boolean(project.preview));
         }
       }, "image/png");
+      showCursor.current = true;
       resolve();
     });
   };
@@ -210,8 +224,8 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
   };
 
   const mouseMoveHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
+    currentPoint.current = getCursorPoint(event, scale);
     if (drawing.current) {
-      currentPoint.current = getCursorPoint(event, scale);
       flashingPoints.current.push({ ...currentPoint.current });
       const virtualCanvas = virtualLayers.current.find((layer) => layer.id === activeLayer?.id);
       if (virtualCanvas) {
@@ -229,11 +243,21 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
           };
 
           draw(currentInstrument, instrumentData);
-          requestAnimationFrame(() => renderLayers());
         }
       }
     }
+    requestAnimationFrame(() => renderLayers());
   };
+
+  const mouseLeaveHandler = () => {
+    showCursor.current = false;
+    requestAnimationFrame(() => renderLayers());
+  }
+
+  const mouseEnterHandler = () => {
+    showCursor.current = true;
+    requestAnimationFrame(() => renderLayers());
+  }
 
   const mouseDownHandler: React.MouseEventHandler<HTMLCanvasElement> = (event) => {
     flashingPoints.current = [];
@@ -413,6 +437,8 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
             onMouseDown={mouseDownHandler}
             onMouseUp={mouseUpHandler}
             onMouseMove={mouseMoveHandler}
+            onMouseEnter={mouseEnterHandler}
+            onMouseLeave={mouseLeaveHandler}
           ></canvas>
         </Box>
       </Box>
