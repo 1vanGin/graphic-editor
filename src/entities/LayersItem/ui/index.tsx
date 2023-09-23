@@ -9,7 +9,7 @@ import {
   setActiveLayer,
   toggleVisibility,
 } from "features/Layers/model/slice";
-import { useFirebaseDb } from "shared/hooks";
+import { useFirebaseDb, useFirebaseStorage } from "shared/hooks";
 
 const useStyles = createStyles((theme) => ({
   symbol: {
@@ -44,6 +44,7 @@ export function LayersItem({ layer }: ILayersItemProps) {
   const projectId = useAppSelector((state) => state.projects.openProjectId);
   const dispatch = useAppDispatch();
   const { updateProjectLayer, deleteProjectLayer } = useFirebaseDb();
+  const { deleteFile } = useFirebaseStorage();
 
   const handleEditableTextChange = (layer: ILayer, event: React.ChangeEvent<HTMLInputElement>) => {
     const newLabel = event.currentTarget.value;
@@ -77,6 +78,10 @@ export function LayersItem({ layer }: ILayersItemProps) {
       projectId,
       layer,
     });
+    deleteFile(
+      projectId,
+      layer.id,
+    );
   };
 
   return (
