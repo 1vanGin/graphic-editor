@@ -101,7 +101,7 @@ export const useFirebaseStorage = () => {
   };
 
   const deleteFile = (projectId: string, imageName: string) => {
-    const imageRef = ref(firebaseStorage, `${projectId}/${imageName}`);
+    const imageRef = ref(firebaseStorage, `${projectId}/${imageName}.png`);
     deleteObject(imageRef)
       .then(() => {
         console.log("File deleted successfully");

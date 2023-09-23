@@ -22,7 +22,8 @@ export const DeleteProjectModal = ({
     if (projectId) {
       dispatch(deleteProject(projectId));
       deleteProjectFromDB(projectId);
-      navigate(`/`);
+      navigate(`/`)
+      onClose()
     }
   };
 

@@ -6,17 +6,7 @@ export interface FormValues {
   width: number;
 }
 
-export interface ProjectProp {
-  id: string;
-  name: string;
-  width: number;
-  height: number;
-  createdDate: number;
-  preview?: string;
-  layers?: {
-    [key: string]: ILayer;
-  };
-}
+
 
 export interface IUpdateProjectLayers {
   projectId: string;
