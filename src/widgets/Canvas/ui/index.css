@@ -1,0 +1,12 @@
+canvas {
+    background: white;
+    border: 1px solid lightgrey;
+}
+
+.canvas-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 30px);
+    background-color: lightgrey;
+}
