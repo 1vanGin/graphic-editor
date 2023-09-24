@@ -122,9 +122,10 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
 
     if (canvas && ctx) {
       clear(ctx, canvas.width, canvas.height);
+      
       virtualLayers.current
         .slice()
-        .sort((a, b) => a.sort - b.sort)
+        .sort((a, b) => b.sort - a.sort)
         .forEach((layer) => {
           if (layer.isVisible) {
             ctx.globalAlpha = layer.opacity / 100;
@@ -344,14 +345,12 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
       }
       // document.body.append(supportLayer.current);
     }
-    let sort = 0;
+
     const promises = layers.map(async (layer) => {
       const index = virtualLayers.current.findIndex((item) => item.id === layer.id);
-      // Сортировка слоёв, если не задан sortOrder
-      sort = layer.sortOrder || sort + 1;
       if (index !== -1) {
         virtualLayers.current[index].opacity = layer.opacity;
-        virtualLayers.current[index].sort = sort;
+        virtualLayers.current[index].sort = layer.sortOrder;
         virtualLayers.current[index].isVisible = layer.isVisible;
         virtualLayers.current[index].url = layer.url;
       } else {
@@ -364,7 +363,7 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
           canvas,
           id: layer.id,
           opacity: layer.opacity,
-          sort,
+          sort: layer.sortOrder,
           isVisible: layer.isVisible,
           initialImage: img,
           url: layer.url,
@@ -381,6 +380,9 @@ export const Canvas: React.FC<CanvasProps> = ({ project }) => {
           layerCtx?.drawImage(img, 0, 0);
         }
       }
+
+      // Удаляем лишние слои из virtualLayers
+      virtualLayers.current = virtualLayers.current.filter(virtualLayer => layers.some(layer => layer.id === virtualLayer.id));
     });
     // Ререндер после загрузки всех картинок
     Promise.all(promises).then(() =>
